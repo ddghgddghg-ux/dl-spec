@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>프리미엄 시리즈 기획 스펙 통합 문서</title>
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+  :root {
+    --primary: #42c9dd; --secondary: #006ad4;
+    --neutral-900: #212121; --neutral-800: #424242; --neutral-700: #616161;
+    --neutral-600: #757575; --neutral-500: #9e9e9e; --neutral-400: #bdbdbd;
+    --neutral-300: #e0e0e0; --neutral-200: #eeeeee; --neutral-100: #fafafa;
+    --radius: 8px;
+    --sizes: 14px; --sizexs: 12px; --sizexs2: 13px; --sizem: 16px; --sizel: 18px;
+    --accent: #FF5A36;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: Pretendard, arial, sans-serif; }
+  body { background: #f0f0f0; color: var(--neutral-900); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* ── 문서 헤더 ── */
+  .doc-header-bar { background: #fff; border-bottom: 1px solid var(--neutral-300); padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; position: sticky; top: 0; z-index: 100; }
+  .doc-header-bar .doc-title { font-size: 16px; font-weight: 700; color: var(--neutral-900); }
+  .doc-header-bar .doc-meta { font-size: 12px; color: var(--neutral-600); display: flex; gap: 16px; }
+  .doc-header-bar .doc-meta strong { color: var(--neutral-800); font-weight: 600; }
+
+  /* ── 페이지 셀렉터 탭 ── */
+  .page-selector { background: #fff; border-bottom: 1px solid var(--neutral-300); padding: 0 32px; display: flex; align-items: center; gap: 0; position: sticky; top: 57px; z-index: 99; }
+  .page-tab { font-size: 13px; font-weight: 400; color: var(--neutral-600); padding: 12px 20px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; background: none; border-top: none; border-left: none; border-right: none; white-space: nowrap; }
+  .page-tab:hover { color: var(--neutral-900); background: var(--neutral-100); }
+  .page-tab.active { color: var(--neutral-900); font-weight: 700; border-bottom: 3px solid var(--neutral-900); }
+
+  /* ── 공통 범례 ── */
+  .legend-bar { background: #fff; border-bottom: 1px solid var(--neutral-200); padding: 10px 32px; display: flex; gap: 16px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--neutral-700); }
+  .badge { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 9px; font-weight: 700; }
+  .tag { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 3px; }
+  .tag-remove { background: #fdecea; color: #c62828; }
+  .tag-add    { background: #e8f5e9; color: #2e7d32; }
+  .tag-change { background: #fff8e1; color: #f57f17; }
+  .tag-keep   { background: #f3f3f3; color: #616161; }
+
+  /* ── 페이지 콘텐츠 ── */
+  .page-content { display: none; }
+  .page-content.active { display: block; }
+
+  /* ── 스펙 레이아웃 ── */
+  .spec-wrap { padding: 24px 32px; }
+  .spec-layout { display: flex; gap: 0; align-items: flex-start; background: #fff; border: 1px solid var(--neutral-300); border-radius: var(--radius); overflow: hidden; }
+  .mockup-panel { flex: 1; min-width: 0; padding: 24px; border-right: 1px solid var(--neutral-200); }
+  .spec-panel { width: 320px; flex-shrink: 0; }
+  .spec-item { padding: 13px 16px; border-bottom: 1px solid var(--neutral-200); }
+  .spec-item:last-child { border-bottom: none; }
+  .spec-item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+  .spec-num { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+  .spec-label { font-size: 13px; font-weight: 700; color: var(--neutral-900); }
+  .spec-change { display: flex; gap: 6px; align-items: flex-start; font-size: 12px; margin-bottom: 3px; }
+  .spec-change .text { color: var(--neutral-700); line-height: 1.5; }
+  .spec-note { font-size: 11px; color: var(--neutral-500); margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--neutral-200); line-height: 1.5; }
+  .modal-spec { margin-top: 8px; background: var(--neutral-100); border-radius: 4px; padding: 8px 10px; font-size: 11px; color: var(--neutral-700); line-height: 1.6; }
+  .modal-spec .ms-title { font-weight: 700; color: var(--neutral-900); margin-bottom: 4px; font-size: 12px; }
+  .modal-spec table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  .modal-spec td { padding: 3px 4px; vertical-align: top; }
+  .modal-spec td:first-child { color: var(--neutral-600); white-space: nowrap; width: 80px; }
+
+  /* ── 하이라이트 ── */
+  .hl { outline: 2px dashed var(--accent); outline-offset: 2px; border-radius: 3px; position: relative; }
+  .hl-label { position: absolute; top: -11px; left: -2px; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 9px; font-weight: 700; z-index: 10; line-height: 1; }
+
+  /* ══════════════════════════════════════
+     상세 페이지 목업 스타일
+  ══════════════════════════════════════ */
+  .com-big-thumb { display: flex; gap: 20px; padding: 16px 0; align-items: flex-start; }
+  .com-big-thumb .left .thumb { width: 140px; height: 186px; border-radius: 6px; overflow: hidden; background: var(--neutral-200); }
+  .com-big-thumb .left .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .com-big-thumb .left .keyword { margin-top: 10px; }
+  .com-big-thumb .left .keyword .kw-tit { font-size: 11px; color: var(--neutral-600); margin-bottom: 5px; }
+  .com-big-thumb .left .keyword .kw-cont { display: flex; flex-wrap: wrap; gap: 4px; }
+  .com-big-thumb .left .keyword .kw-cont button { font-size: 10px; color: var(--neutral-700); background: var(--neutral-100); border: 1px solid var(--neutral-300); border-radius: 20px; padding: 2px 7px; }
+  .thumb-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+  .t-name { font-size: 16px; font-weight: 700; line-height: 1.4; }
+  .t-sub { font-size: 12px; color: var(--neutral-600); }
+  .t-desc { font-size: 12px; color: var(--neutral-700); }
+  .t-pub { font-size: 11px; color: var(--neutral-500); }
+  .t-subinfo { display: flex; align-items: center; gap: 7px; }
+  .t-total { font-size: 12px; color: var(--neutral-700); }
+  .t-flag { font-size: 10px; font-weight: 600; color: #fff; background: var(--neutral-500); border-radius: 3px; padding: 1px 6px; }
+  .price-row { display: flex; align-items: baseline; gap: 10px; }
+  .price-display { display: flex; align-items: baseline; gap: 2px; }
+  .p-num { font-size: 22px; font-weight: 700; font-family: Verdana, sans-serif; }
+  .p-unit { font-size: 14px; }
+  .p-rental { font-size: 12px; color: var(--neutral-600); }
+  .buy-btn button { font-family: Pretendard, arial, sans-serif; font-size: 13px; font-weight: 700; color: #fff; background: var(--primary); border: none; border-radius: var(--radius); padding: 10px 0; width: 100%; max-width: 300px; display: block; cursor: default; }
+  .t-caution p { font-size: 11px; color: var(--neutral-600); line-height: 1.6; }
+  .t-caution p::before { content: "※ "; }
+  .prod-tabs { display: flex; border-bottom: 2px solid var(--neutral-300); margin-top: 4px; }
+  .prod-tabs .tab { font-size: 12px; color: var(--neutral-600); padding: 8px 14px; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+  .prod-tabs .tab.active { color: var(--neutral-900); font-weight: 700; border-bottom: 2px solid var(--neutral-900); }
+  .prod-body { display: flex; gap: 16px; align-items: flex-start; }
+  .prod-main { flex: 1; min-width: 0; }
+  .pd-intro { padding: 12px 0; }
+  .pd-intro .sub-tit { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .pd-intro p { font-size: 12px; color: var(--neutral-800); line-height: 1.7; }
+  .pd-toc { padding: 12px 0; border-top: 1px solid var(--neutral-300); }
+  .pd-toc > .sub-tit { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+  .toc-top { display: flex; align-items: center; justify-content: space-between; padding-bottom: 8px; }
+  .toc-top-left { display: flex; align-items: center; gap: 8px; }
+  .toc-top select { font-size: 12px; height: 32px; width: 110px; padding: 0 24px 0 8px; border: 1px solid var(--neutral-300); border-radius: var(--radius); background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%239e9e9e' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 3px center; appearance: none; }
+  .toc-list { list-style: none; border-top: 1px solid var(--neutral-300); }
+  .toc-list > li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--neutral-300); }
+  .book-info { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+  .b-thumb { width: 48px; height: 64px; flex-shrink: 0; border-radius: 3px; overflow: hidden; background: var(--neutral-200); }
+  .b-thumb img { width: 48px; height: 64px; object-fit: cover; display: block; }
+  .b-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .b-name { font-size: 12px; color: var(--neutral-900); line-height: 1.4; word-break: keep-all; }
+  .b-date { font-size: 10px; color: var(--neutral-500); }
+  .b-btn button { font-size: 11px; font-weight: 600; color: #fff; background: var(--primary); border: none; border-radius: var(--radius); padding: 0 12px; height: 28px; cursor: default; white-space: nowrap; }
+  .quick-box { width: 170px; flex-shrink: 0; border: 1px solid var(--neutral-300); border-radius: var(--radius); padding: 14px; background: #fff; }
+  .q-title { font-size: 11px; font-weight: 700; line-height: 1.5; word-break: keep-all; padding-bottom: 10px; border-bottom: 1px solid var(--neutral-300); margin-bottom: 10px; }
+  .q-price { display: flex; align-items: baseline; gap: 2px; margin-bottom: 10px; }
+  .q-price strong { font-size: 20px; font-weight: 700; font-family: Verdana, sans-serif; }
+  .q-price small { font-size: 13px; }
+  .q-btn button { width: 100%; font-size: 13px; font-weight: 700; color: #fff; background: var(--primary); border: none; border-radius: var(--radius); padding: 9px 0; cursor: default; }
+
+  /* ══════════════════════════════════════
+     /order 페이지 목업 스타일
+  ══════════════════════════════════════ */
+  .order-tit { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+  .order-list-title { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid var(--neutral-900); }
+  .order-list-title .tit strong { font-size: 14px; font-weight: 700; }
+  .order-list { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--neutral-300); }
+  .order-list .o-thumb { width: 52px; height: 70px; border-radius: 4px; overflow: hidden; background: var(--neutral-200); flex-shrink: 0; }
+  .order-list .o-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .o-cart-wrap { flex: 1; min-width: 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .o-info { flex: 1; min-width: 0; }
+  .pd-flag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-bottom: 6px; }
+  .pd-flag.premium { background: #fff3e0; color: #e65100; }
+  .o-name { font-size: 13px; font-weight: 700; line-height: 1.5; margin-bottom: 6px; word-break: keep-all; }
+  .o-epi-txt { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--neutral-700); flex-wrap: wrap; }
+  .o-epi-txt .blue { color: var(--secondary); font-weight: 700; }
+  .o-epi-txt .divider { color: var(--neutral-400); }
+  .o-epi-txt .rental-p { color: var(--neutral-600); }
+  .o-epi-btn { font-size: 12px; color: var(--neutral-700); background: none; border: 1px solid var(--neutral-300); border-radius: 4px; padding: 2px 8px; cursor: default; }
+  .o-price { font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .o-section { margin-top: 20px; }
+  .o-radio-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--neutral-800); margin-bottom: 8px; }
+  .o-radio-row input { accent-color: var(--primary); }
+  .o-point-row { margin-left: 24px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+  .o-point-row input { width: 150px; height: 36px; border: 1px solid var(--neutral-300); border-radius: var(--radius); padding: 0 10px; font-size: 13px; }
+  .o-point-row span { font-size: 12px; color: var(--neutral-600); }
+  .o-tab-btn { font-size: 13px; color: var(--primary); background: #fff; border: 1px solid var(--primary); border-radius: var(--radius); padding: 8px 20px; margin-left: 24px; font-weight: 600; }
+  .o-caution { margin-left: 24px; margin-top: 8px; }
+  .o-caution span { display: block; font-size: 11px; color: var(--neutral-600); line-height: 1.6; }
+  .o-caution span::before { content: "※ "; }
+  .o-agree-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; }
+  .o-agree-row input { width: 14px; height: 14px; accent-color: var(--primary); }
+  .o-agree-row label { font-size: 12px; color: var(--neutral-700); line-height: 1.5; }
+  .o-quick { width: 200px; flex-shrink: 0; border: 1px solid var(--neutral-300); border-radius: var(--radius); overflow: hidden; background: #fff; }
+  .o-quick .tit { font-size: 13px; color: var(--neutral-600); text-align: center; padding: 14px 16px 6px; }
+  .o-quick .price-area { text-align: center; padding: 0 16px 14px; border-bottom: 1px solid var(--neutral-200); }
+  .o-quick .price-area strong { font-size: 28px; font-weight: 700; font-family: Verdana, sans-serif; color: var(--neutral-900); }
+  .o-quick .price-area small { font-size: 14px; color: var(--neutral-900); }
+  .o-quick .btn-area { padding: 14px 16px; }
+  .o-quick .btn-area button { width: 100%; font-size: 14px; font-weight: 700; color: #fff; background: var(--primary); border: none; border-radius: var(--radius); padding: 12px 0; cursor: default; }
+
+  .order-body { display: flex; gap: 32px; align-items: flex-start; }
+  .order-main { flex: 1; min-width: 0; }
+
+  @media print { body { background: #fff; } .doc-header-bar, .page-selector, .legend-bar { position: static; } }
+</style>
+</head>
+<body>
+
+<!-- 문서 헤더 -->
+<div class="doc-header-bar">
+  <div class="doc-title">프리미엄 시리즈 기획 스펙</div>
+  <div class="doc-meta">
+    <span><strong>작성일</strong> 2026-04-14</span>
+    <span><strong>작성자</strong> 서비스기획팀</span>
+    <span><strong>상태</strong> 검토중</span>
+    <span><strong>대상</strong> 개발 / 디자인</span>
+  </div>
+</div>
+
+<!-- 페이지 탭 셀렉터 -->
+<div class="page-selector">
+  <button class="page-tab active" onclick="switchPage('detail', this)">상세 페이지 (/series)</button>
+  <button class="page-tab" onclick="switchPage('order', this)">주문결제 페이지 (/order)</button>
+  <button class="page-tab" onclick="switchPage('admin', this)">관리자 — 시리즈 등록</button>
+  <button class="page-tab" onclick="switchPage('compose', this)">관리자 — 구성 관리</button>
+  <button class="page-tab" onclick="switchPage('listing', this)">프리미엄 시리즈 전시 페이지</button>
+  <button class="page-tab" onclick="switchPage('mypage', this)">마이페이지 — 나의 책장</button>
+</div>
+
+<!-- 범례 -->
+<div class="legend-bar">
+  <div class="legend-item"><span class="badge">N</span> 변경 포인트</div>
+  <div class="legend-item"><span class="tag tag-remove">제거</span> 삭제</div>
+  <div class="legend-item"><span class="tag tag-add">추가</span> 신규</div>
+  <div class="legend-item"><span class="tag tag-change">변경</span> 수정</div>
+  <div class="legend-item"><span class="tag tag-keep">유지</span> 기존 동일</div>
+</div>
+
+<!-- ════════════════════════════════════
+     상세 페이지
+════════════════════════════════════ -->
+<div class="page-content active" id="page-detail">
+  <div class="spec-wrap">
+    <div class="spec-layout">
+
+      <!-- 목업 -->
+      <div class="mockup-panel">
+        <div class="com-big-thumb">
+          <div class="left">
+            <div class="thumb"><img src="https://images.dongascience.com/uploads/series/thumbnail/202601/1769647127-0c87d42e-f47d-4473-b370-a2bdef895fb3.png" alt=""></div>
+            <div class="keyword">
+              <p class="kw-tit">키워드</p>
+              <div class="kw-cont"><button>#거북</button><button>#노린재</button><button>#새</button><button>#자연</button></div>
+            </div>
+          </div>
+          <div class="thumb-info">
+            <div><p class="t-name">이제 이름으로 불러 주세요! 우리동네 생물도감 3종</p><span class="t-sub">지구사랑탐사대X시민과학풀씨 4기</span></div>
+            <div><p class="t-desc">어린이과학동아, 지구사랑탐사대, 개천에서 새난다, 노린내를 찾아서, 리버쉘</p><p class="t-pub">동아사이언스 · 2026년 01월 27일</p></div>
+            <div class="t-subinfo"><span class="t-total">총 9화</span><span class="t-flag">완결</span></div>
+            <!-- ① 가격 + 대여기간 -->
+            <div class="hl" style="display:inline-flex; align-items:baseline; gap:10px;">
+              <span class="hl-label">1</span>
+              <div class="price-row">
+                <div class="price-display"><span class="p-num">3,000</span><span class="p-unit">원</span></div>
+                <span class="p-rental">· 대여기간 30일</span>
+              </div>
+            </div>
+            <!-- ② 대여하기 버튼 -->
+            <div class="hl" style="display:block; max-width:300px;">
+              <span class="hl-label">2</span>
+              <div class="buy-btn"><button>대여하기</button></div>
+            </div>
+            <!-- ③ 구독 안내 문구 -->
+            <div class="hl">
+              <span class="hl-label">3</span>
+              <div class="t-caution">
+                <p>구독 상품(Smart+, d라이브러리 Basic/All 패스) 구매자는 무료로 이용할 수 있습니다.</p>
+                <p>별도의 설치 없이 인터넷으로 쉽게 읽는 e북 뷰어입니다. WI-FI 환경에서 사용을 권장합니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="prod-tabs">
+          <a class="tab active">소개</a><a class="tab">목차</a><a class="tab">기본 정보</a><a class="tab">리뷰</a>
+        </div>
+
+        <div class="prod-body">
+          <div class="prod-main">
+            <div class="pd-intro">
+              <p class="sub-tit">우리 동네 생물을 소개합니다</p>
+              <p>지구사랑탐사대와 시민과학풀씨 4기가 함께한 생생한 자연 관찰 도감 OPEN! 시민과학풀씨는 환경, 안전, 보건 분야의 연구자들이 시민과 함께 연구하고 성과를 도출하는 연구 지원 프로젝트입니다.</p>
+            </div>
+            <div class="pd-toc">
+              <p class="sub-tit">목차</p>
+              <div class="toc-top">
+                <div class="toc-top-left">
+                  <!-- ④ 전체선택 제거 표시 -->
+                  <div class="hl" style="display:inline-flex; align-items:center; gap:5px; padding:4px 8px; background:#fdecea; border-radius:4px;">
+                    <span class="hl-label">4</span>
+                    <span style="font-size:11px; color:#c62828; text-decoration:line-through;">☑ 전체 선택</span>
+                  </div>
+                  <select><option>1화부터</option></select>
+                </div>
+                <!-- ⑤ 선택 대여 제거 표시 -->
+                <div class="hl" style="display:inline-flex; padding:4px 10px; background:#fdecea; border-radius:4px;">
+                  <span class="hl-label">5</span>
+                  <span style="font-size:11px; color:#c62828; text-decoration:line-through;">선택 대여</span>
+                </div>
+              </div>
+              <ul class="toc-list">
+                <li>
+                  <div class="book-info">
+                    <div class="b-thumb"><img src="https://images.dongascience.com/uploads/cartoon/thumbnail/202602/1770712855-ff4299b3-6896-4631-94b8-882236ca0030.png" alt=""></div>
+                    <div class="b-info">
+                      <span class="b-name">[시민과학풀씨_리버쉘] 외래거북 10종 도감</span>
+                      <span class="b-date">2026.02.10</span>
+                      <!-- ⑥ 단건 가격 제거 -->
+                      <div class="hl" style="display:inline-block;">
+                        <span class="hl-label">6</span>
+                        <span style="font-size:11px; color:#c62828; text-decoration:line-through;">3,000원</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- ⑦ 보기 버튼 -->
+                  <div class="hl" style="position:relative;"><span class="hl-label">7</span><div class="b-btn"><button>보기</button></div></div>
+                </li>
+                <li>
+                  <div class="book-info">
+                    <div class="b-thumb"><img src="https://images.dongascience.com/uploads/cartoon/thumbnail/202602/1770712925-82315397-87ba-46f3-a35d-90a80d5a9f5f.png" alt=""></div>
+                    <div class="b-info"><span class="b-name">[시민과학풀씨_노린재의 노린내를 찾아서] 우리동네 노린재 사진&amp;향 도감</span><span class="b-date">2026.02.10</span></div>
+                  </div>
+                  <div class="b-btn"><button>보기</button></div>
+                </li>
+                <li>
+                  <div class="book-info">
+                    <div class="b-thumb"><img src="https://images.dongascience.com/uploads/article/thumbnail/202506/1749958008-2300d590-5fad-4f41-8ece-63147e43e5c6.png" alt=""></div>
+                    <div class="b-info"><span class="b-name">[어린이과학동아] 늑대거북부터 노린재까지, 시민의 눈으로 샅샅이 찾는다!</span><span class="b-date">2026.01.27</span></div>
+                  </div>
+                  <div class="b-btn"><button>보기</button></div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 우측 퀵 -->
+          <div class="quick-box">
+            <div class="q-title">이제 이름으로 불러 주세요! 우리동네 생물도감 3종</div>
+            <div class="hl"><span class="hl-label">8</span><div class="q-price"><strong>3,000</strong><small>원</small></div></div>
+            <div class="hl"><span class="hl-label">9</span><div class="q-btn"><button>대여하기</button></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 스펙 패널 -->
+      <div class="spec-panel">
+        <div class="spec-item" style="background:#fff8f6; border-left:3px solid var(--accent);"><div style="font-size:12px; font-weight:700; color:var(--accent); padding:2px 0;">변경 항목 상세</div></div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">가격 + 대여기간</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">헤더 영역에 시리즈 대여 가격 노출</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">가격 우측에 대여기간 표시<br>예: 3,000원 · 대여기간 30일</span></div>
+          <p class="spec-note">대여 완료 상태에서도 가격·기간 유지 노출. 대여기간은 시리즈별 관리자 설정값.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">헤더 CTA 버튼</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">상태에 따라 버튼명 분기</span></div>
+          <div class="modal-spec">
+            <div class="ms-title">버튼 상태 정의</div>
+            <table>
+              <tr><td style="vertical-align:top;">대여 권한 없음<br><span style="color:#9e9e9e;font-size:10px;">미결제 · 만료</span></td><td>「대여하기」 노출<br>· 비로그인 → 로그인 안내 팝업<br>· 로그인 → 구매 안내 모달<br>&nbsp;&nbsp;타이틀: 이 시리즈는 구매 후 이용할 수 있습니다<br>&nbsp;&nbsp;버튼: 취소 / 결제하기<br>&nbsp;&nbsp;결제하기 → /order 이동</td></tr>
+              <tr><td style="vertical-align:top;">대여 완료<br><span style="color:#9e9e9e;font-size:10px;">유효기간 내</span></td><td>「첫 화 보기」 노출<br>· 목차 최상단 콘텐츠 열기<br>&nbsp;&nbsp;웹기사 → 웹기사 페이지<br>&nbsp;&nbsp;PDF → 뷰어<br>· 최상단 기준: 관리자 설정 정렬 순서</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">구독 안내 문구</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">추후 프리미엄 전용 문구로 교체 예정 (현재 기존 문구 유지)</span></div>
+          <p class="spec-note">구독권 보유자 정책 확정 후 문구 수정.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">전체 선택 체크박스</span></div>
+          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">전체 선택 체크박스 및 레이블 제거</span></div>
+          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">각 콘텐츠 행 개별 체크박스 제거</span></div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">5</span><span class="spec-label">선택 대여 버튼</span></div>
+          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">목차 상단 우측 「선택 대여」 버튼 제거</span></div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">6</span><span class="spec-label">콘텐츠 단건 가격</span></div>
+          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">각 콘텐츠 하단 단건 가격 비노출</span></div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">7</span><span class="spec-label">콘텐츠 단건 버튼</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">「무료」→「보기」</span></div>
+          <div class="modal-spec">
+            <div class="ms-title">클릭 시 동작</div>
+            <table>
+              <tr><td>비로그인</td><td>로그인 안내 팝업</td></tr>
+              <tr><td>로그인 · 미구매 · 만료</td><td>구매 안내 모달<br>· 타이틀: 이 시리즈는 구매 후 이용할 수 있습니다<br>· 버튼: 취소 / 결제하기<br>· 결제하기 → /order 이동</td></tr>
+              <tr><td>대여 완료</td><td>해당 콘텐츠 열기<br>웹기사 → 웹기사 / PDF → 뷰어</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">8</span><span class="spec-label">우측 퀵 — 가격</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">시리즈 대여 가격 노출 (①과 동일 값)</span></div>
+          <p class="spec-note">대여 완료 상태에서도 가격 유지 노출.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">9</span><span class="spec-label">우측 퀵 — CTA</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">상태에 따라 버튼명 분기</span></div>
+          <div class="modal-spec">
+            <div class="ms-title">버튼 상태 정의</div>
+            <table>
+              <tr><td style="vertical-align:top;">대여 권한 없음<br><span style="color:#9e9e9e;font-size:10px;">미결제 · 만료</span></td><td>「대여하기」 노출 (②와 동일 동작)</td></tr>
+              <tr><td style="vertical-align:top;">대여 완료<br><span style="color:#9e9e9e;font-size:10px;">유효기간 내</span></td><td>「첫 화 보기」 노출 (②와 동일 동작)</td></tr>
+            </table>
+          </div>
+          <p class="spec-note">스크롤 시 고정 노출되는 퀵 CTA.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     /order 페이지
+════════════════════════════════════ -->
+<div class="page-content" id="page-order">
+  <div class="spec-wrap">
+    <div class="spec-layout">
+
+      <!-- 목업 -->
+      <div class="mockup-panel">
+        <div class="order-tit">주문결제</div>
+        <div class="order-body">
+          <div class="order-main">
+
+            <div class="order-list-title"><div class="tit"><strong>주문상품</strong></div></div>
+            <div class="order-list">
+              <div class="o-thumb"><img src="https://images.dongascience.com/uploads/series/thumbnail/202601/1769647127-0c87d42e-f47d-4473-b370-a2bdef895fb3.png" alt=""></div>
+              <div class="o-cart-wrap">
+                <div class="o-info">
+                  <!-- ① 상품 유형 뱃지 -->
+                  <div class="hl" style="display:inline-block;">
+                    <span class="hl-label">1</span>
+                    <span class="pd-flag premium">프리미엄 시리즈</span>
+                  </div>
+                  <!-- ② 시리즈명 -->
+                  <div class="hl" style="display:block;">
+                    <span class="hl-label">2</span>
+                    <p class="o-name">이제 이름으로 불러 주세요! 우리동네 생물도감 3종</p>
+                  </div>
+                  <!-- ③ 총 회차 + 대여기간 + 목록 -->
+                  <div class="hl" style="display:block; margin-top:4px;">
+                    <span class="hl-label">3</span>
+                    <div class="o-epi-txt">
+                      <span>총 <span class="blue">9</span>화</span>
+                      <span class="divider">·</span>
+                      <span class="rental-p">대여기간 30일</span>
+                      <span class="divider">|</span>
+                      <button class="o-epi-btn" id="specEpiBtn" onclick="toggleSpecEpi(this)">목록 펼치기 ▾</button>
+                    </div>
+                    <ul id="specEpiList" style="display:none; margin-top:8px; border:1px solid #e1e3ea; border-radius:6px; background:#fafafa; padding:8px 12px; max-height:180px; overflow-y:auto; list-style:none;">
+                      <li style="font-size:11px; color:#616161; padding:4px 0; border-bottom:1px solid #f4f4f4;">[시민과학풀씨_리버쉘] 외래거북 10종 도감</li>
+                      <li style="font-size:11px; color:#616161; padding:4px 0; border-bottom:1px solid #f4f4f4;">[시민과학풀씨_노린재의 노린내를 찾아서] 우리동네 노린재 사진&amp;향 도감</li>
+                      <li style="font-size:11px; color:#616161; padding:4px 0; border-bottom:1px solid #f4f4f4;">[시민과학풀씨_개천에서 새난다] 우리동네 하천 새 도감</li>
+                      <li style="font-size:11px; color:#616161; padding:4px 0; border-bottom:1px solid #f4f4f4;">[어린이과학동아] 늑대거북부터 노린재까지, 시민의 눈으로 샅샅이 찾는다!</li>
+                      <li style="font-size:11px; color:#616161; padding:4px 0; border-bottom:1px solid #f4f4f4;">[어린이과학동아] 하천과 새의 연결고리를 찾아라!</li>
+                      <li style="font-size:11px; color:#616161; padding:4px 0; border-bottom:1px solid #f4f4f4;">[어린이과학동아] 하얗게 변한 조개를 찾아라</li>
+                      <li style="font-size:11px; color:#616161; padding:4px 0; border-bottom:1px solid #f4f4f4;">[어린이과학동아] 가까이 있는 노린재 노린재를 찾아라</li>
+                      <li style="font-size:11px; color:#616161; padding:4px 0; border-bottom:1px solid #f4f4f4;">[어린이과학동아] 해충으로부터 왕벚나무를 지켜라</li>
+                      <li style="font-size:11px; color:#616161; padding:4px 0;">[어린이과학동아] 외래거북 대학교에 산다?</li>
+                    </ul>
+                  </div>
+                </div>
+                <!-- ④ 가격 -->
+                <div class="hl" style="position:relative;">
+                  <span class="hl-label">4</span>
+                  <span class="o-price">3,000원</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="o-section">
+              <div class="order-list-title"><div class="tit"><strong>결제수단</strong></div></div>
+              <div class="o-radio-row"><input type="radio" checked name="r2"> DS포인트 사용</div>
+              <div class="o-point-row"><input type="text" value="0"><span>남은 포인트 : 0</span></div>
+              <div class="o-radio-row"><input type="radio" name="r2"> 일반결제</div>
+              <button class="o-tab-btn">신용카드 <span style="font-size:11px;font-weight:400;">(삼성/카카오페이 포함)</span></button>
+              <div class="o-caution">
+                <span>고객님의 소중한 정보는 올앳 전자결제시스템에 의해 안전하게 보호됩니다.</span>
+                <span>일시불일 경우 별도의 카드 수수료는 없습니다.</span>
+              </div>
+            </div>
+
+            <div class="o-section">
+              <div class="order-list-title"><div class="tit"><strong>주문자 동의</strong></div></div>
+              <div class="o-agree-row">
+                <input type="checkbox">
+                <label>구매할 상품, 가격 정보를 확인하였으며, 구매 진행에 동의합니다. (전자상거래법 제 8조 2항)</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- 우측 플로팅 -->
+          <div class="hl" style="position:relative; align-self:flex-start;">
+            <span class="hl-label">5</span>
+            <div class="o-quick">
+              <div class="tit">총 결제금액</div>
+              <div class="price-area"><strong>3,000</strong><small>원</small></div>
+              <div class="btn-area"><button>결제하기</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 스펙 패널 -->
+      <div class="spec-panel">
+        <div class="spec-item" style="background:#fff8f6; border-left:3px solid var(--accent);"><div style="font-size:12px; font-weight:700; color:var(--accent); padding:2px 0;">변경 항목 상세</div></div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">상품 유형 뱃지</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">「연재만화」→「프리미엄 시리즈」</span></div>
+          <p class="spec-note">뱃지 색상: 주황 계열 (#fff3e0 배경, #e65100 텍스트).</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">상품명</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">프리미엄 시리즈명 노출</span></div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">시리즈 정보</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">총 N화 · 대여기간 N일 | 목록 펼치기</span></div>
+          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">목록 펼치기 시 회차별 가격 미노출 (회차명만 노출)</span></div>
+          <p class="spec-note">대여기간은 시리즈별 관리자 설정값.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">상품 가격</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">시리즈 대여 가격 노출 (예: 3,000원)</span></div>
+          <p class="spec-note">⑤ 총 결제금액과 동일 값.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">5</span><span class="spec-label">우측 플로팅 — 총 결제금액</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">시리즈 대여 가격 노출 (예: 3,000원)</span></div>
+          <p class="spec-note">④ 상품 가격과 동일 값. 기존 합산 로직 그대로 활용.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num" style="background:var(--neutral-500);">-</span><span class="spec-label">우측 플로팅 — 결제하기</span></div>
+          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">기존과 동일</span></div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num" style="background:var(--neutral-500);">-</span><span class="spec-label">결제수단</span></div>
+          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">기존과 동일</span></div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num" style="background:var(--neutral-500);">-</span><span class="spec-label">주문자 동의</span></div>
+          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">기존과 동일</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════
+     관리자 — 구성 관리 모달
+════════════════════════════════════ -->
+<div class="page-content" id="page-compose">
+  <div class="spec-wrap">
+    <div class="spec-layout">
+
+      <!-- 목업 -->
+      <div class="mockup-panel">
+        <div style="background:#fff; border:1px solid #e1e3ea; border-radius:6px; overflow:hidden; max-width:800px;">
+
+          <!-- 모달 헤더 -->
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid #e1e3ea;">
+            <span style="font-size:14px; font-weight:700; color:#181c32;">시리즈 묶음</span>
+            <span style="font-size:18px; color:#a1a5b7; cursor:pointer;">✕</span>
+          </div>
+
+          <!-- 모달 바디 -->
+          <div style="padding:14px; font-size:12px; color:#3f4254;">
+
+            <!-- ① 콘텐츠 타입 셀렉터 -->
+            <div class="hl" style="display:flex; align-items:center; gap:10px; margin-bottom:12px; padding:8px; background:#f8f9fa; border-radius:6px;">
+              <span class="hl-label">1</span>
+              <label style="font-weight:600; color:#5e6278; white-space:nowrap;">콘텐츠 유형</label>
+              <select id="contentTypeSelect" style="height:32px; padding:0 10px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; background:#fff;" onchange="switchContentType(this.value)">
+                <option value="">선택</option>
+                <option value="article" selected>기사</option>
+                <option value="emag">e매거진</option>
+                <option value="cartoon">회차 (연재만화)</option>
+                <option value="series">회차 (시리즈)</option>
+                <option value="ebook">eBook</option>
+              </select>
+            </div>
+
+            <!-- ② 검색 필터 영역 -->
+            <div class="hl" style="background:#fff; border:1px solid #e1e3ea; border-radius:6px; padding:10px; margin-bottom:10px;">
+              <span class="hl-label">2</span>
+              <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:6px;" id="filterCategory">
+                  <label style="font-weight:600; color:#5e6278;">구분</label>
+                  <select style="height:30px; padding:0 8px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; width:120px;">
+                    <option>선택</option><option>과학동아</option><option>수학동아</option><option>어린이과학동아</option><option>어린이수학동아</option>
+                  </select>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <label style="font-weight:600; color:#5e6278;">검색</label>
+                  <select id="searchScope" style="height:30px; padding:0 8px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; width:100px;">
+                    <option>제목</option><option>간행물ID</option>
+                  </select>
+                  <input type="text" id="searchTextInput" placeholder="제목이나 간행물ID를 입력해주세요." style="height:30px; padding:0 10px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; width:220px;">
+                  <span id="yearMonthFilter" style="display:none; gap:6px; align-items:center; flex-wrap:nowrap;">
+                    <select style="height:30px; padding:0 8px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; width:80px;"><option>2026년</option><option>2025년</option><option>2024년</option></select>
+                    <select style="height:30px; padding:0 8px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; width:70px;"><option>01월</option><option>02월</option><option>03월</option><option>04월</option></select>
+                  </span>
+                </div>
+                <button style="height:30px; padding:0 14px; background:#50cd89; color:#fff; border:none; border-radius:6px; font-size:12px; cursor:pointer;">검색</button>
+                <button style="height:30px; padding:0 14px; background:#f9f9f9; color:#5e6278; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; cursor:pointer;">초기화</button>
+              </div>
+            </div>
+
+            <!-- ③ 검색 결과 리스트 -->
+            <div class="hl" style="margin-bottom:10px; border-radius:6px; overflow:visible;">
+              <span class="hl-label">3</span>
+              <div style="max-height:220px; overflow:auto; border:1px solid #e1e3ea; border-radius:6px;">
+              <div style="padding:6px 10px; background:#f9f9f9; border-bottom:1px solid #e1e3ea; font-size:11px; color:#5e6278;">총 41,016건</div>
+              <table style="width:100%; border-collapse:collapse; font-size:11px;">
+                <thead>
+                  <tr style="background:#f9f9f9;">
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea; width:28px;"><input type="checkbox" style="accent-color:#009ef7;"></th>
+                    <th id="thIdLabel" style="padding:6px 8px; border-bottom:1px solid #e1e3ea; text-align:center;">ID / 게시번호</th>
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea; text-align:center;">표지 (대표이미지)</th>
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea; text-align:center;">제목</th>
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea; text-align:center;">구분</th>
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea; text-align:center;">간행년월</th>
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea; text-align:center;">노출</th>
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea; text-align:center;">등록일시</th>
+                  </tr>
+                </thead>
+                <tbody id="contentListTbody"></tbody>
+              </table>
+              </div>
+            </div>
+
+            <!-- 안내 문구 (유지) -->
+            <div style="background:#f8f9fa; border-radius:4px; padding:8px 10px; font-size:11px; color:#7e8299; margin-bottom:10px;">
+              * PDF 파일은 <strong>회차 &gt; 시리즈</strong> 메뉴에서 업로드 가능합니다.
+            </div>
+
+            <!-- 추가 버튼 (유지) -->
+            <div style="text-align:center; margin-bottom:12px;">
+              <button style="width:200px; height:34px; background:#181c32; color:#fff; border:none; border-radius:6px; font-size:12px; cursor:pointer;">추가 ▼</button>
+            </div>
+
+            <!-- ④ 선택된 구성 목록 -->
+            <div class="hl" style="overflow:visible; border-radius:6px;">
+              <span class="hl-label">4</span>
+            <div style="max-height:260px; overflow:auto; border:1px solid #e1e3ea; border-radius:6px;">
+              <table style="width:100%; border-collapse:collapse; font-size:11px;">
+                <thead>
+                  <tr style="background:#f9f9f9;">
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea; width:60px;">순서</th>
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea; width:110px;">콘텐츠 유형</th>
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea; width:70px;">ID</th>
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea;">제목</th>
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea; width:90px;">등록일</th>
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea; width:90px;">노출일</th>
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea; width:60px;">미리보기</th>
+                    <th style="padding:6px 8px; border-bottom:1px solid #e1e3ea; width:40px;">삭제</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid #f4f4f4;">
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#e1e3ea;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:10px;">↓</button></td>
+                    <td style="padding:5px 8px; text-align:center;"><span style="padding:2px 7px; border-radius:4px; font-size:10px; font-weight:600; background:#fff3cd; color:#856404;">기사</span></td>
+                    <td style="padding:5px 8px; text-align:center;"><input type="text" value="52628" readonly style="width:58px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:11px; text-align:center; background:#f9f9f9;"></td>
+                    <td style="padding:5px 8px;"><input type="text" value="[에디터 노트] 특이점과 빅뱅" style="width:100%; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:11px; padding:0 6px;"></td>
+                    <td style="padding:5px 8px;"><input type="date" value="2024-03-30" readonly style="width:88px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:10px; background:#f9f9f9;"></td>
+                    <td style="padding:5px 8px;"><input type="date" value="2024-03-30" style="width:88px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:10px;"></td>
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#009ef7; color:#fff; border:none; border-radius:4px; padding:2px 8px; font-size:10px; cursor:pointer;">미리보기</button></td>
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#f1416c; color:#fff; border:none; border-radius:4px; padding:2px 6px; font-size:10px; cursor:pointer;">삭제</button></td>
+                  </tr>
+                  <tr style="border-bottom:1px solid #f4f4f4;">
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#e1e3ea;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:10px;">↑</button> <button style="background:#e1e3ea;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:10px;">↓</button></td>
+                    <td style="padding:5px 8px; text-align:center;"><span style="padding:2px 7px; border-radius:4px; font-size:10px; font-weight:600; background:#dbeafe; color:#1e40af;">e매거진</span></td>
+                    <td style="padding:5px 8px; text-align:center;"><input type="text" value="2024-04-001" readonly style="width:58px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:11px; text-align:center; background:#f9f9f9;"></td>
+                    <td style="padding:5px 8px;"><input type="text" value="과학동아 2024년 4월호" style="width:100%; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:11px; padding:0 6px;"></td>
+                    <td style="padding:5px 8px;"><input type="date" value="2024-03-28" readonly style="width:88px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:10px; background:#f9f9f9;"></td>
+                    <td style="padding:5px 8px;"><input type="date" value="2024-03-28" style="width:88px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:10px;"></td>
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#009ef7; color:#fff; border:none; border-radius:4px; padding:2px 8px; font-size:10px; cursor:pointer;">미리보기</button></td>
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#f1416c; color:#fff; border:none; border-radius:4px; padding:2px 6px; font-size:10px; cursor:pointer;">삭제</button></td>
+                  </tr>
+                  <tr style="border-bottom:1px solid #f4f4f4;">
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#e1e3ea;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:10px;">↑</button> <button style="background:#e1e3ea;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:10px;">↓</button></td>
+                    <td style="padding:5px 8px; text-align:center;"><span style="padding:2px 7px; border-radius:4px; font-size:10px; font-weight:600; background:#d1f0e0; color:#1a7a45;">회차(연재만화)</span></td>
+                    <td style="padding:5px 8px; text-align:center;"><input type="text" value="1264" readonly style="width:58px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:11px; text-align:center; background:#f9f9f9;"></td>
+                    <td style="padding:5px 8px;"><input type="text" value="[시민과학풀씨_리버쉘] 외래거북 10종 도감" style="width:100%; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:11px; padding:0 6px;"></td>
+                    <td style="padding:5px 8px;"><input type="date" value="2026-02-10" readonly style="width:88px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:10px; background:#f9f9f9;"></td>
+                    <td style="padding:5px 8px;"><input type="date" value="2026-02-10" style="width:88px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:10px;"></td>
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#009ef7; color:#fff; border:none; border-radius:4px; padding:2px 8px; font-size:10px; cursor:pointer;">미리보기</button></td>
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#f1416c; color:#fff; border:none; border-radius:4px; padding:2px 6px; font-size:10px; cursor:pointer;">삭제</button></td>
+                  </tr>
+                  <tr style="border-bottom:1px solid #f4f4f4;">
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#e1e3ea;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:10px;">↑</button> <button style="background:#e1e3ea;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:10px;">↓</button></td>
+                    <td style="padding:5px 8px; text-align:center;"><span style="padding:2px 7px; border-radius:4px; font-size:10px; font-weight:600; background:#ede9fe; color:#5b21b6;">회차(시리즈)</span></td>
+                    <td style="padding:5px 8px; text-align:center;"><input type="text" value="2010" readonly style="width:58px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:11px; text-align:center; background:#f9f9f9;"></td>
+                    <td style="padding:5px 8px;"><input type="text" value="[어린이과학동아] 늑대거북부터 노린재까지, 시민의 눈으로 샅샅이 찾는다!" style="width:100%; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:11px; padding:0 6px;"></td>
+                    <td style="padding:5px 8px;"><input type="date" value="2026-01-27" readonly style="width:88px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:10px; background:#f9f9f9;"></td>
+                    <td style="padding:5px 8px;"><input type="date" value="2026-01-27" style="width:88px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:10px;"></td>
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#009ef7; color:#fff; border:none; border-radius:4px; padding:2px 8px; font-size:10px; cursor:pointer;">미리보기</button></td>
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#f1416c; color:#fff; border:none; border-radius:4px; padding:2px 6px; font-size:10px; cursor:pointer;">삭제</button></td>
+                  </tr>
+                  <tr>
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#e1e3ea;border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:10px;">↑</button></td>
+                    <td style="padding:5px 8px; text-align:center;"><span style="padding:2px 7px; border-radius:4px; font-size:10px; font-weight:600; background:#fee2e2; color:#991b1b;">eBook</span></td>
+                    <td style="padding:5px 8px; text-align:center;"><input type="text" value="3001" readonly style="width:58px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:11px; text-align:center; background:#f9f9f9;"></td>
+                    <td style="padding:5px 8px;"><input type="text" value="[시민과학풀씨_개천에서 새난다] 우리동네 하천 새 도감" style="width:100%; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:11px; padding:0 6px;"></td>
+                    <td style="padding:5px 8px;"><input type="date" value="2026-02-10" readonly style="width:88px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:10px; background:#f9f9f9;"></td>
+                    <td style="padding:5px 8px;"><input type="date" value="2026-02-10" style="width:88px; height:24px; border:1px solid #e1e3ea; border-radius:4px; font-size:10px;"></td>
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#009ef7; color:#fff; border:none; border-radius:4px; padding:2px 8px; font-size:10px; cursor:pointer;">미리보기</button></td>
+                    <td style="padding:5px 8px; text-align:center;"><button style="background:#f1416c; color:#fff; border:none; border-radius:4px; padding:2px 6px; font-size:10px; cursor:pointer;">삭제</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            </div>
+
+          </div>
+
+          <!-- 모달 푸터 -->
+          <div style="display:flex; justify-content:flex-end; gap:8px; padding:10px 14px; border-top:1px solid #e1e3ea;">
+            <button style="height:32px; padding:0 16px; background:#f9f9f9; color:#5e6278; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; cursor:pointer;">취소</button>
+            <button style="height:32px; padding:0 16px; background:#009ef7; color:#fff; border:none; border-radius:6px; font-size:12px; cursor:pointer;">저장</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 스펙 패널 -->
+      <div class="spec-panel">
+        <div class="spec-item" style="background:#fff8f6; border-left:3px solid var(--accent);"><div style="font-size:12px; font-weight:700; color:var(--accent); padding:2px 0;">변경 항목 상세</div></div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">콘텐츠 유형 셀렉터</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">기존 「기사 등록」 라디오 버튼 → 콘텐츠 유형 셀렉트로 교체</span></div>
+          <div class="modal-spec">
+            <div class="ms-title">선택 옵션</div>
+            <table>
+              <tr><td>기사</td><td>기존과 동일. 과학동아/수학동아/어린이과학동아/어린이수학동아 구분 필터 유지.</td></tr>
+              <tr><td>e매거진</td><td>e매거진 리스트 노출</td></tr>
+              <tr><td>회차 (연재만화)</td><td>연재만화 회차 리스트 노출</td></tr>
+              <tr><td>회차 (시리즈)</td><td>시리즈 회차 리스트 노출</td></tr>
+              <tr><td>eBook</td><td>eBook 리스트 노출</td></tr>
+            </table>
+          </div>
+          <p class="spec-note">유형 선택 시 하단 검색 필터 및 결과 리스트 해당 타입으로 전환.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">검색 필터</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">콘텐츠 유형에 따라 필터 옵션 동적 변경</span></div>
+          <div class="modal-spec">
+            <div class="ms-title">유형별 검색 필터</div>
+            <table>
+              <tr><td>기사</td><td>구분 (과학동아·수학동아·어린이과학동아·어린이수학동아) + 검색 (제목 / 간행물ID)</td></tr>
+              <tr><td>e매거진</td><td>구분 (매거진 동일) + 검색 (년 / 월 셀렉트)</td></tr>
+              <tr><td>회차 (연재만화)</td><td>검색 (게시번호 / 제목)</td></tr>
+              <tr><td>회차 (시리즈)</td><td>검색 (게시번호 / 제목)</td></tr>
+              <tr><td>eBook</td><td>검색 (게시번호 / 제목)</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">검색 결과 리스트</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">선택된 유형의 콘텐츠 리스트 노출</span></div>
+          <div class="modal-spec">
+            <div class="ms-title">공통 컬럼</div>
+            <table>
+              <tr><td>체크박스 / ID / 표지 / 제목 / 구분 / 간행년월 / 노출여부</td></tr>
+            </table>
+          </div>
+          <div class="modal-spec">
+            <div class="ms-title">공통 컬럼 정의 (전 유형 동일)</div>
+            <table>
+              <tr><td style="white-space:nowrap;">ID / 게시번호</td><td>유형에 따라 타이틀 표기 변경. 기사: ID / 회차·eBook·e매거진: 게시번호. 해당 값 노출.</td></tr>
+              <tr><td style="white-space:nowrap;">표지 (대표이미지)</td><td>유형별 대표 이미지 노출.</td></tr>
+              <tr><td>제목</td><td>공통 노출.</td></tr>
+              <tr><td>구분</td><td>기사: 과학동아 등 노출. 나머지 유형: 공란.</td></tr>
+              <tr><td>간행년월</td><td>기사·e매거진: 해당 값 노출. 회차·eBook: 공란.</td></tr>
+              <tr><td>등록일</td><td>전 유형 공통 노출.</td></tr>
+              <tr><td>노출여부</td><td>기존과 동일 (Y/N).</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">구성 목록 콘텐츠 유형 표시</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">컬럼명 「타입」→「콘텐츠 유형」으로 변경<br>값: 기사 / e매거진 / 회차(연재만화) / 회차(시리즈) / eBook</span></div>
+          <p class="spec-note">이종 콘텐츠 혼재 시 유형 식별 가능하도록. 파일 형식(PDF 등) 대신 콘텐츠 등록 유형명으로 표시.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num" style="background:var(--neutral-500);">-</span><span class="spec-label">나머지 구성</span></div>
+          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">추가 버튼 / 순서 변경(↑↓) / 노출일 / 미리보기 / 삭제 / 저장·취소 버튼 기존과 동일</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════
+     관리자 — 시리즈 등록 페이지
+════════════════════════════════════ -->
+<div class="page-content" id="page-admin">
+  <div class="spec-wrap">
+    <div class="spec-layout">
+
+      <!-- 목업 -->
+      <div class="mockup-panel">
+        <div style="font-size:13px; font-weight:700; color:#212121; margin-bottom:16px;">시리즈 등록</div>
+
+        <!-- 기존 필드들 (유지) -->
+        <div style="display:flex; flex-direction:column; gap:10px; font-size:12px;">
+
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">카테고리 <span style="color:#f1416c;">*</span></label>
+            <select style="width:160px; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 8px; background:#f9f9f9;">
+                <option>대분류선택</option>
+                <option selected style="font-weight:600;">프리미엄 시리즈</option>
+                <option>개념</option>
+                <option>교과세특</option>
+                <option>학습법</option>
+                <option>일상 과학 탐구</option>
+                <option>교사용</option>
+                <option>문해력 워크지</option>
+                <option>필독서 레벨업 워크지</option>
+              </select>
+            <select style="width:130px; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 8px; background:#f9f9f9; margin-left:8px;"><option>중분류</option></select>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">상품명 <span style="color:#f1416c;">*</span></label>
+            <input type="text" style="flex:1; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#f9f9f9;">
+          </div>
+
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">부제 <span style="color:#f1416c;">*</span></label>
+            <input type="text" style="flex:1; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#f9f9f9;">
+          </div>
+
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">작가이름 <span style="color:#f1416c;">*</span></label>
+            <input type="text" style="flex:1; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#f9f9f9;">
+          </div>
+
+          <div style="display:flex; align-items:flex-start; gap:8px;">
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0; padding-top:6px;">키워드</label>
+            <input type="text" placeholder="키워드 입력 후 엔터" style="flex:1; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#f9f9f9;">
+          </div>
+
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">노출여부 <span style="color:#f1416c;">*</span></label>
+            <select style="width:180px; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 8px; background:#f9f9f9;"><option>선택</option><option>Y</option><option>N</option></select>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">연재주기 <span style="color:#f1416c;">*</span></label>
+            <input type="text" style="width:180px; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#f9f9f9;">
+          </div>
+
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">완결여부 <span style="color:#f1416c;">*</span></label>
+            <select style="width:180px; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 8px; background:#f9f9f9;"><option>선택</option><option>Y</option><option>N</option></select>
+          </div>
+
+          <!-- ① 구독요금제 적용 — 핵심 분기 필드 -->
+          <div class="hl" style="display:flex; align-items:center; gap:12px; padding:8px; border-radius:6px;">
+            <span class="hl-label">1</span>
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">구독요금제 적용</label>
+            <label style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer;">
+              <input type="radio" name="subPlan" value="Y" style="accent-color:#009ef7;" onchange="togglePremiumFields(this)"> Y
+            </label>
+            <label style="display:flex; align-items:center; gap:4px; font-size:12px; cursor:pointer;">
+              <input type="radio" name="subPlan" value="N" checked style="accent-color:#009ef7;" onchange="togglePremiumFields(this)"> N(별도구매)
+            </label>
+          </div>
+
+          <!-- ② 프리미엄 시리즈 가격 — 조건부 노출 -->
+          <div class="hl" id="premiumPriceRow" style="display:flex; align-items:center; gap:8px; padding:8px; background:#fff8f6; border-radius:6px;">
+            <span class="hl-label">2</span>
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">프리미엄 시리즈 가격 <span style="color:#f1416c;">*</span></label>
+            <input type="number" id="premiumPriceInput" placeholder="예: 3000" style="width:160px; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#fff;">
+            <span style="font-size:12px; color:#5e6278;">원</span>
+          </div>
+
+          <!-- ③ 대여기간 — 조건부 노출 -->
+          <div class="hl" id="rentalPeriodRow" style="display:flex; align-items:center; gap:8px; padding:8px; background:#fff8f6; border-radius:6px;">
+            <span class="hl-label">3</span>
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">대여기간 <span style="color:#f1416c;">*</span></label>
+            <input type="number" id="rentalPeriodInput" placeholder="예: 30" style="width:120px; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#fff;">
+            <span style="font-size:12px; color:#5e6278;">일</span>
+            <span style="font-size:11px; color:#a1a5b7; margin-left:4px;">숫자만 입력 (예: 30, 60, 90)</span>
+          </div>
+
+        </div>
+
+        <!-- 기본정보 섹션 -->
+        <div style="font-size:13px; font-weight:700; color:#212121; margin:20px 0 12px;">기본정보</div>
+        <div style="display:flex; flex-direction:column; gap:10px; font-size:12px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">발행사 <span style="color:#f1416c;">*</span></label>
+            <input type="text" style="flex:1; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#f9f9f9;">
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">연재시작일 <span style="color:#f1416c;">*</span></label>
+            <input type="date" style="width:180px; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#f9f9f9;">
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">열람형식 <span style="color:#f1416c;">*</span></label>
+            <select style="width:180px; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 8px; background:#f9f9f9;"><option>선택</option><option>WEB</option><option>PDF</option><option>WEB / PDF</option></select>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">연재분량 <span style="color:#f1416c;">*</span></label>
+            <input type="text" value="-" readonly style="width:180px; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#f4f4f4; color:#a1a5b7;">
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">ISBN</label>
+            <input type="text" style="flex:1; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#f9f9f9;">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 스펙 패널 -->
+      <div class="spec-panel">
+        <div class="spec-item" style="background:#fff8f6; border-left:3px solid var(--accent);"><div style="font-size:12px; font-weight:700; color:var(--accent); padding:2px 0;">변경 항목 상세</div></div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">구독요금제 적용</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">기존 Y / N(별도구매) 동일</span></div>
+          <div class="modal-spec">
+            <div class="ms-title">분기 정의</div>
+            <table>
+              <tr><td>Y 선택</td><td>일반 시리즈. 구독권 보유자 열람 가능.<br>②③ 필드 노출되나 입력 불가(disabled). 값 초기화.</td></tr>
+              <tr><td>N(별도구매) 선택</td><td>프리미엄 시리즈로 분류. 구독권 보유자도 열람 불가.<br>②③ 필드 입력 가능 + 필수.</td></tr>
+              <tr><td>Y→N 재선택</td><td>기존 저장된 값 유지 (저장 전 변경은 초기화).</td></tr>
+            </table>
+          </div>
+          <p class="spec-note">N(별도구매) 선택이 프리미엄 시리즈 구분자로 사용됨. 개발 분류 로직 반드시 적용 필요.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">프리미엄 시리즈 가격</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">N(별도구매) 선택 시 조건부 노출 + 필수 입력</span></div>
+          <div class="modal-spec">
+            <div class="ms-title">필드 정의</div>
+            <table>
+              <tr><td>입력 타입</td><td>숫자 (정수, 원 단위)</td></tr>
+              <tr><td>활성 조건</td><td>구독요금제 N(별도구매) 선택 시</td></tr>
+              <tr><td>표시 위치</td><td>구독요금제 적용 필드 바로 하단</td></tr>
+            </table>
+          </div>
+          <p class="spec-note">상세 페이지 ① 가격 표시, /order 페이지 ④⑤ 금액과 연동.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">대여기간</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">N(별도구매) 선택 시 조건부 노출 + 필수 입력</span></div>
+          <div class="modal-spec">
+            <div class="ms-title">필드 정의</div>
+            <table>
+              <tr><td>입력 타입</td><td>숫자 (정수, 일 단위)</td></tr>
+              <tr><td>활성 조건</td><td>구독요금제 N(별도구매) 선택 시</td></tr>
+              <tr><td>표시 위치</td><td>프리미엄 시리즈 가격 필드 바로 하단</td></tr>
+            </table>
+          </div>
+          <p class="spec-note">상세 페이지 ① 대여기간 표시, /order 페이지 ③ 대여기간 N일과 연동. 대여 만료 기준 일수로 사용.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">카테고리 대분류</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">대분류에 「프리미엄 시리즈」 항목 신규 추가</span></div>
+          <p class="spec-note">프리미엄 시리즈 등록 시 기본 선택값으로 노출. 목록 페이지 대분류 필터에도 동일하게 추가 필요.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num" style="background:var(--neutral-500);">-</span><span class="spec-label">나머지 필드</span></div>
+          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">기존과 동일</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     프리미엄 시리즈 전시 페이지
+════════════════════════════════════ -->
+<div class="page-content" id="page-listing">
+  <div class="spec-wrap">
+    <div class="spec-layout">
+
+      <!-- 목업 -->
+      <div class="mockup-panel">
+        <style>
+          .dl-listing * { box-sizing: border-box; margin: 0; padding: 0; font-family: Pretendard, arial, sans-serif; }
+          .dl-listing { background: #fff; color: #212121; max-width: 700px; }
+          .dl-listing .page-tit { text-align: center; padding: 32px 0 24px; font-size: 24px; font-weight: 700; letter-spacing: -0.03em; }
+          .dl-listing .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 24px; list-style: none; }
+          .dl-listing .card-grid li a { text-decoration: none; display: block; }
+          .dl-listing .card-grid li a:hover .card-thumb img { transform: scale(1.04); }
+          .dl-listing .card-thumb { position: relative; width: 100%; aspect-ratio: 3/4; border-radius: 8px; overflow: hidden; background: #eee; margin-bottom: 8px; }
+          .dl-listing .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.2s; }
+          .dl-listing .thumb-ico { position: absolute; bottom: 6px; left: 6px; }
+          .dl-listing .th-ico-pur { background: #7c3aed; color: #fff; border-radius: 4px; padding: 2px 7px; font-size: 10px; font-weight: 700; }
+          .dl-listing .card-name { font-size: 13px; font-weight: 700; color: #212121; line-height: 1.4; margin-bottom: 3px; word-break: keep-all; }
+          .dl-listing .card-desc { font-size: 11px; color: #757575; }
+          .dl-listing .lst-paging { display: flex; justify-content: center; gap: 4px; margin-top: 24px; }
+          .dl-listing .lst-paging button { width: 28px; height: 28px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fff; color: #616161; font-size: 12px; cursor: pointer; }
+          .dl-listing .lst-paging button.on { background: #212121; color: #fff; border-color: #212121; font-weight: 700; }
+          .dl-listing .lst-paging button:disabled { opacity: 0.35; cursor: default; }
+        </style>
+
+        <div class="dl-listing">
+
+          <!-- ① 페이지 타이틀 -->
+          <div class="hl" style="display:block; text-align:center; padding:8px;">
+            <span class="hl-label">1</span>
+            <p class="page-tit">프리미엄 시리즈</p>
+          </div>
+
+          <!-- ② 카드 그리드 -->
+          <div class="hl" style="display:block; margin-top:8px;">
+            <span class="hl-label">2</span>
+            <ul class="card-grid">
+              <li><a href="#">
+                <div class="card-thumb"><img src="https://images.dongascience.com/uploads/series/thumbnail/202601/1769647127-0c87d42e-f47d-4473-b370-a2bdef895fb3.png" alt=""><div class="thumb-ico"><span class="th-ico-pur">Series</span></div></div>
+                <p class="card-name">우리동네 생물도감 3종 — 지구사랑탐사대X시민과학풀씨 4기</p>
+                <span class="card-desc">어린이과학동아편집부</span>
+              </a></li>
+              <li><a href="#">
+                <div class="card-thumb"><img src="https://images.dongascience.com/uploads/series/thumbnail/202603/1774404827-55187bc0-09a5-4d84-9f71-db1d465a6258.png" alt=""><div class="thumb-ico"><span class="th-ico-pur">Series</span></div></div>
+                <p class="card-name">과학동아 특집 심층 탐구 시리즈 — 기후위기와 탄소중립</p>
+                <span class="card-desc">과학동아편집부</span>
+              </a></li>
+              <li><a href="#">
+                <div class="card-thumb"><img src="https://images.dongascience.com/uploads/series/thumbnail/202603/1773192286-febe7e41-4bfa-4e17-94d3-9765eaa301a3.png" alt=""><div class="thumb-ico"><span class="th-ico-pur">Series</span></div></div>
+                <p class="card-name">어린이 과학 탐험대 — 우주와 별자리 완전 정복</p>
+                <span class="card-desc">어린이과학동아편집부</span>
+              </a></li>
+              <li><a href="#">
+                <div class="card-thumb"><img src="https://images.dongascience.com/uploads/series/thumbnail/202603/1772613536-7333deb3-18a8-457d-abc9-6b291ec6d953.png" alt=""><div class="thumb-ico"><span class="th-ico-pur">Series</span></div></div>
+                <p class="card-name">수학동아 개념 완성 시리즈 — 중학 수학 핵심 30선</p>
+                <span class="card-desc">수학동아편집부</span>
+              </a></li>
+              <li><a href="#">
+                <div class="card-thumb"><img src="https://images.dongascience.com/uploads/cartoon/thumbnail/202602/1770712855-ff4299b3-6896-4631-94b8-882236ca0030.png" alt=""><div class="thumb-ico"><span class="th-ico-pur">Series</span></div></div>
+                <p class="card-name">시민과학풀씨 현장 기록 시리즈 — 리버쉘 거북 도감</p>
+                <span class="card-desc">시민과학풀씨</span>
+              </a></li>
+              <li><a href="#">
+                <div class="card-thumb"><img src="https://images.dongascience.com/uploads/cartoon/thumbnail/202602/1770712973-26b3ac39-6fae-43e5-acf9-cd78f94d53ee.png" alt=""><div class="thumb-ico"><span class="th-ico-pur">Series</span></div></div>
+                <p class="card-name">하천 생태 관찰 시리즈 — 개천에서 새난다 조류 도감</p>
+                <span class="card-desc">시민과학풀씨</span>
+              </a></li>
+            </ul>
+          </div>
+
+          <!-- ③ 페이징 -->
+          <div class="hl" style="display:block; margin-top:8px;">
+            <span class="hl-label">3</span>
+            <div class="lst-paging">
+              <button disabled>«</button><button disabled>‹</button>
+              <button class="on">1</button><button>2</button><button>3</button>
+              <button>›</button><button>»</button>
+            </div>
+          </div>
+
+          <!-- GNB 구분선 -->
+          <div style="margin-top:28px; padding-top:20px; border-top:1px solid #e1e3ea;">
+            <p style="font-size:12px; font-weight:700; color:#5e6278; margin-bottom:12px;">GNB 전체 메뉴</p>
+            <div style="display:flex; gap:40px; font-size:12px; background:#fff; border:1px solid #e1e3ea; border-radius:6px; padding:20px; flex-wrap:nowrap; overflow-x:auto; align-items:flex-start;">
+
+              <dl>
+                <dt style="font-weight:700; color:#212121; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid #e1e3ea;">e매거진</dt>
+                <dd style="color:#424242; margin-bottom:5px;">과학동아</dd>
+                <dd style="color:#424242; margin-bottom:5px;">수학동아</dd>
+                <dd style="color:#424242; margin-bottom:5px;">어린이과학동아</dd>
+                <dd style="color:#424242;">어린이수학동아</dd>
+              </dl>
+
+              <dl>
+                <dt style="font-weight:700; color:#212121; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid #e1e3ea;">eBook</dt>
+                <dd style="color:#424242; margin-bottom:5px;">과학</dd>
+                <dd style="color:#424242; margin-bottom:5px;">수학</dd>
+                <dd style="color:#424242; margin-bottom:5px;">공학 · IT</dd>
+                <dd style="color:#424242;">만화 · 소설</dd>
+              </dl>
+
+              <dl>
+                <dt style="font-weight:700; color:#212121; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid #e1e3ea;">연재만화</dt>
+                <dd style="color:#424242; margin-bottom:5px;">연재중</dd>
+                <dd style="color:#424242;">완결</dd>
+              </dl>
+
+              <dl>
+                <dt style="font-weight:700; color:#212121; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid #e1e3ea;">통합과학</dt>
+                <dd style="color:#424242; margin-bottom:5px;">개념</dd>
+                <dd style="color:#424242; margin-bottom:5px;">교과세특</dd>
+                <dd style="color:#424242; margin-bottom:5px;">학습법</dd>
+                <dd style="color:#424242; margin-bottom:5px;">일상 과학 탐구</dd>
+                <dd style="color:#424242;">교사용</dd>
+              </dl>
+
+              <dl>
+                <dt style="font-weight:700; color:#212121; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid #e1e3ea;">워크지</dt>
+                <dd style="color:#424242; margin-bottom:5px;">문해력 워크지</dd>
+                <dd style="color:#424242;">필독서 레벨업 워크지</dd>
+              </dl>
+
+              <!-- ④ 프리미엄 시리즈 신규 추가 -->
+              <dl class="hl" style="position:relative;">
+                <span class="hl-label">4</span>
+                <dt style="font-weight:700; color:#7c3aed; margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid #e0e0e0;">프리미엄 시리즈</dt>
+                <dd style="color:#424242;">프리미엄 시리즈</dd>
+              </dl>
+
+              <dl>
+                <dt style="font-weight:700; color:#212121; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid #e1e3ea;">이과력 퀴즈</dt>
+                <dd style="color:#424242;">이과력 퀴즈</dd>
+              </dl>
+
+              <dl>
+                <dt style="font-weight:700; color:#212121; margin-bottom:10px; padding-bottom:6px; border-bottom:1px solid #e1e3ea;">이벤트</dt>
+                <dd style="color:#424242; margin-bottom:5px;">진행중인 이벤트</dd>
+                <dd style="color:#424242;">종료된 이벤트</dd>
+              </dl>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 스펙 패널 -->
+      <div class="spec-panel">
+        <div class="spec-item" style="background:#fff8f6; border-left:3px solid var(--accent);"><div style="font-size:12px; font-weight:700; color:var(--accent); padding:2px 0;">변경 항목 상세</div></div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">페이지 타이틀</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">「프리미엄 시리즈」 전시 페이지 신규 생성</span></div>
+          <p class="spec-note">URL 미정. 기존 전시 페이지 구조 동일하게 적용.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">카드 그리드</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">프리미엄 시리즈 카드 목록 노출</span></div>
+          <div class="modal-spec">
+            <div class="ms-title">카드 구성</div>
+            <table>
+              <tr><td>썸네일</td><td>시리즈 표지 이미지</td></tr>
+              <tr><td>뱃지</td><td>좌하단 「Series」 뱃지 — 기존 전시 페이지와 동일</td></tr>
+              <tr><td>타이틀</td><td>시리즈명</td></tr>
+              <tr><td>서브텍스트</td><td>작가/발행사</td></tr>
+            </table>
+          </div>
+          <div class="spec-change" style="margin-top:6px;"><span class="tag tag-remove">제거</span><span class="text">가격 · 대여기간 카드 내 미노출</span></div>
+          <p class="spec-note">노출 조건: 카테고리 「프리미엄 시리즈」 + 노출여부 Y.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">페이징</span></div>
+          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">기존 전시 페이지 페이징 컴포넌트 동일 적용</span></div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">GNB 전체 메뉴 추가</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">전체 메뉴에 「프리미엄 시리즈」 독립 항목 추가</span></div>
+          <div class="modal-spec">
+            <div class="ms-title">위치 및 구조</div>
+            <table>
+              <tr><td>위치</td><td>워크지 메뉴 하단 별도 dl 항목으로 추가</td></tr>
+              <tr><td>dt</td><td>프리미엄 시리즈</td></tr>
+              <tr><td>dd</td><td>프리미엄 시리즈 → 전시 페이지 링크</td></tr>
+              <tr><td>URL</td><td>미정, 개발팀 협의 필요</td></tr>
+            </table>
+          </div>
+          <p class="spec-note">현재 워크지 dl 안에 잘못 포함된 항목 분리 필요.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     마이페이지 — 나의 책장
+════════════════════════════════════ -->
+<div class="page-content" id="page-mypage">
+  <div class="spec-wrap">
+    <div class="spec-layout">
+
+      <!-- 목업 -->
+      <div class="mockup-panel">
+        <style>
+          .mp2 * { box-sizing: border-box; margin: 0; padding: 0; font-family: Pretendard, arial, sans-serif; }
+          .mp2 { background: #fff; color: #212121; max-width: 500px; }
+          .mp2 .mp-ptab-row { display: flex; border-bottom: 1px solid #e0e0e0; margin-bottom: 20px; }
+          .mp2 .mp-ptab { font-size: 14px; color: #757575; padding: 10px 16px; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; border-top: none; border-left: none; border-right: none; }
+          .mp2 .mp-ptab.active { color: #212121; font-weight: 700; border-bottom: 2px solid #212121; }
+          .mp2 .sec-tit { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+          .mp2 .filter-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+          .mp2 .chip { font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: 20px; border: 1px solid #e0e0e0; background: #fff; color: #616161; cursor: default; white-space: nowrap; }
+          .mp2 .chip.active { background: #212121; color: #fff; border-color: #212121; font-weight: 700; }
+          .mp2 .chip.premium { border-color: #7c3aed; color: #7c3aed; }
+          .mp2 .empty-box { border: 1px solid #eeeeee; border-radius: 8px; background: #fafafa; padding: 40px 20px; text-align: center; font-size: 14px; color: #757575; margin-bottom: 20px; }
+          .mp2 .recent-empty { font-size: 14px; color: #757575; text-align: center; padding: 16px 0 28px; }
+        </style>
+
+        <div class="mp2">
+          <div style="text-align:center; padding:14px 0 4px; font-size:14px; font-weight:700; border-bottom:1px solid #eeeeee; margin-bottom:0;">나의 책장</div>
+          <div class="mp-ptab-row">
+            <button class="mp-ptab active">콘텐츠</button>
+            <button class="mp-ptab">찜한 기사</button>
+          </div>
+
+          <p class="sec-tit">최근 본 콘텐츠</p>
+          <p class="recent-empty">조회 내역이 없습니다.</p>
+
+          <p class="sec-tit">대여한 콘텐츠</p>
+
+          <!-- ① 필터 칩 -->
+          <div class="hl" style="display:block; padding:4px;">
+            <span class="hl-label">1</span>
+            <div class="filter-chips">
+              <button class="chip active">전체</button>
+              <button class="chip">e매거진</button>
+              <button class="chip">eBook</button>
+              <button class="chip">연재만화</button>
+              <button class="chip">통합과학</button>
+              <button class="chip premium">프리미엄 시리즈</button>
+            </div>
+          </div>
+
+          <div class="empty-box">대여한 상품이 없습니다.</div>
+        </div>
+      </div>
+
+      <!-- 스펙 패널 -->
+      <div class="spec-panel">
+        <div class="spec-item" style="background:#fff8f6; border-left:3px solid var(--accent);"><div style="font-size:12px; font-weight:700; color:var(--accent); padding:2px 0;">변경 항목 상세</div></div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">대여한 콘텐츠 필터 칩</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">「통합과학」 우측에 「프리미엄 시리즈」 칩 추가</span></div>
+          <div class="modal-spec">
+            <div class="ms-title">필터 칩 순서</div>
+            <table>
+              <tr><td>순서</td><td>전체 / e매거진 / eBook / 연재만화 / 통합과학 / <strong>프리미엄 시리즈</strong></td></tr>
+              
+              <tr><td>동작</td><td>선택 시 프리미엄 시리즈 대여 내역만 필터링</td></tr>
+            </table>
+          </div>
+          <p class="spec-note">프리미엄 시리즈 대여 완료 상태(유효기간 내) 콘텐츠가 이 탭에 노출. 만료 후에는 만료 상태로 표시 여부 별도 협의 필요.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num" style="background:var(--neutral-500);">-</span><span class="spec-label">나머지 구성</span></div>
+          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">최근 본 콘텐츠 / 찜한 기사 탭 / 교사 배너 / FAQ 기존 동일</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  function toggleSpecEpi(btn) {
+    var list = document.getElementById('specEpiList');
+    var isOpen = list.style.display === 'block';
+    list.style.display = isOpen ? 'none' : 'block';
+    btn.textContent = isOpen ? '목록 펼치기 ▾' : '목록 닫기 ▴';
+  }
+
+  function togglePremiumFields(radio) {
+    const priceInput = document.getElementById('premiumPriceInput');
+    const rentalInput = document.getElementById('rentalPeriodInput');
+    const priceRow = document.getElementById('premiumPriceRow');
+    const rentalRow = document.getElementById('rentalPeriodRow');
+    if (radio.value === 'Y') {
+      priceInput.value = '';
+      rentalInput.value = '';
+      priceInput.disabled = true;
+      rentalInput.disabled = true;
+      priceInput.style.background = '#f4f4f4';
+      priceInput.style.color = '#a1a5b7';
+      rentalInput.style.background = '#f4f4f4';
+      rentalInput.style.color = '#a1a5b7';
+      priceRow.style.opacity = '0.6';
+      rentalRow.style.opacity = '0.6';
+    } else {
+      priceInput.disabled = false;
+      rentalInput.disabled = false;
+      priceInput.style.background = '#fff';
+      priceInput.style.color = '#212121';
+      rentalInput.style.background = '#fff';
+      rentalInput.style.color = '#212121';
+      priceRow.style.opacity = '1';
+      rentalRow.style.opacity = '1';
+    }
+  }
+</script>
+
+<script>
+  var sampleData = {
+    article: [
+      { id: 'S202404N001 : 52628', img: 'https://images.dongascience.com/uploads/article/thumbnail/202404/pic__2024-03-30_at_5.32_.19_PM_.png', title: '[에디터 노트] 특이점과 빅뱅', cat: '과학동아', date: '2024년 04월', reg: '2024-03-30', yn: 'Y' },
+      { id: 'S202404N002 : 52629', img: 'https://images.dongascience.com/uploads/article/thumbnail/202404/pic__2024-03-30_at_5.38_.20_PM_.png', title: '[전지적 독자 시점] "머지않을 미래에 실현될 것만 같은 기대감이 있어요"', cat: '과학동아', date: '2024년 04월', reg: '2024-03-30', yn: 'Y' },
+      { id: 'S202404N003 : 52630', img: 'https://images.dongascience.com/uploads/article/thumbnail/202404/pic__2024-03-30_at_5.43_.34_PM_.png', title: '[포토뉴스] 수염고래가 물속에서 소리내는 비밀', cat: '과학동아', date: '2024년 04월', reg: '2024-03-30', yn: 'Y' },
+    ],
+    emag: [
+      { id: '2024-04-001', img: 'https://images.dongascience.com/uploads/series/thumbnail/202601/1769647127-0c87d42e-f47d-4473-b370-a2bdef895fb3.png', title: '과학동아 2024년 4월호', cat: '과학동아', date: '2024년 04월', reg: '2024-03-28', yn: 'Y' },
+      { id: '2024-03-001', img: 'https://images.dongascience.com/uploads/series/thumbnail/202601/1769647127-0c87d42e-f47d-4473-b370-a2bdef895fb3.png', title: '과학동아 2024년 3월호', cat: '과학동아', date: '2024년 03월', reg: '2024-02-28', yn: 'Y' },
+    ],
+    cartoon: [
+      { id: '1024', img: 'https://images.dongascience.com/uploads/cartoon/thumbnail/202602/1770712855-ff4299b3-6896-4631-94b8-882236ca0030.png', title: '[시민과학풀씨_리버쉘] 외래거북 10종 도감', cat: '', date: '', reg: '2026-02-10', yn: 'Y' },
+      { id: '1025', img: 'https://images.dongascience.com/uploads/cartoon/thumbnail/202602/1770712925-82315397-87ba-46f3-a35d-90a80d5a9f5f.png', title: '[시민과학풀씨_노린재의 노린내를 찾아서] 우리동네 노린재 사진&향 도감', cat: '', date: '', reg: '2026-02-10', yn: 'Y' },
+    ],
+    series: [
+      { id: '2010', img: 'https://images.dongascience.com/uploads/article/thumbnail/202506/1749958008-2300d590-5fad-4f41-8ece-63147e43e5c6.png', title: '[어린이과학동아] 늑대거북부터 노린재까지, 시민의 눈으로 샅샅이 찾는다!', cat: '', date: '', reg: '2026-01-27', yn: 'Y' },
+      { id: '2011', img: 'https://images.dongascience.com/uploads/article/thumbnail/202506/1750946741-992fa2d4-e0df-4a86-9555-d2b432da7069.png', title: '[어린이과학동아] 하천과 새의 연결고리를 찾아라!', cat: '', date: '', reg: '2026-01-27', yn: 'N' },
+    ],
+    ebook: [
+      { id: '3001', img: 'https://images.dongascience.com/uploads/cartoon/thumbnail/202602/1770712973-26b3ac39-6fae-43e5-acf9-cd78f94d53ee.png', title: '[시민과학풀씨_개천에서 새난다] 우리동네 하천 새 도감', cat: '', date: '', reg: '2026-02-10', yn: 'Y' },
+    ]
+  };
+
+  var idLabels = { article: 'ID', emag: '게시번호', cartoon: '게시번호', series: '게시번호', ebook: '게시번호' };
+
+  function switchContentType(val) {
+    var textSearch = document.getElementById('searchScope');
+    var textInput = document.getElementById('searchTextInput');
+    var yearMonth = document.getElementById('yearMonthFilter');
+    var catFilter = document.getElementById('filterCategory');
+    if (!val) return;
+
+    // 필터 업데이트
+    if (val === 'emag') {
+      if (textSearch) textSearch.style.display = 'none';
+      if (textInput) textInput.style.display = 'none';
+      if (yearMonth) yearMonth.style.display = 'inline-flex';
+      if (catFilter) catFilter.style.display = 'flex';
+    } else if (val === 'cartoon' || val === 'series' || val === 'ebook') {
+      if (textSearch) { textSearch.innerHTML = '<option>게시번호</option><option>제목</option>'; textSearch.style.display = ''; }
+      if (textInput) { textInput.placeholder = '게시번호 또는 제목'; textInput.style.display = ''; }
+      if (yearMonth) yearMonth.style.display = 'none';
+      if (catFilter) catFilter.style.display = 'none';
+    } else {
+      if (textSearch) { textSearch.innerHTML = '<option>제목</option><option>간행물ID</option>'; textSearch.style.display = ''; }
+      if (textInput) { textInput.placeholder = '제목이나 간행물ID를 입력해주세요.'; textInput.style.display = ''; }
+      if (yearMonth) yearMonth.style.display = 'none';
+      if (catFilter) catFilter.style.display = 'flex';
+    }
+
+    // 리스트 렌더링
+    var tbody = document.getElementById('contentListTbody');
+    var thId = document.getElementById('thIdLabel');
+    if (!tbody) return;
+    if (thId) thId.textContent = idLabels[val] || 'ID / 게시번호';
+    var rows = (sampleData[val] || []).map(function(d) {
+      return '<tr style="border-bottom:1px solid #f4f4f4;">'
+        + '<td style="padding:5px 8px; text-align:center;"><input type="checkbox" style="accent-color:#009ef7;"></td>'
+        + '<td style="padding:5px 8px; text-align:center; color:#5e6278; font-size:11px;">' + d.id + '</td>'
+        + '<td style="padding:5px 8px; text-align:center;"><img src="' + d.img + '" style="width:40px; height:40px; object-fit:cover; border-radius:4px;"></td>'
+        + '<td style="padding:5px 8px; font-size:11px;">' + d.title + '</td>'
+        + '<td style="padding:5px 8px; text-align:center; font-size:11px; color:#5e6278;">' + (d.cat || '') + '</td>'
+        + '<td style="padding:5px 8px; text-align:center; font-size:11px; color:#5e6278;">' + (d.date || '') + '</td>'
+        + '<td style="padding:5px 8px; text-align:center; font-size:11px; font-weight:700; color:' + (d.yn === 'Y' ? 'red' : 'blue') + ';">' + d.yn + '</td>'
+        + '<td style="padding:5px 8px; text-align:center; font-size:11px; color:#5e6278;">' + d.reg + '</td>'
+        + '</tr>';
+    }).join('');
+    tbody.innerHTML = rows || '<tr><td colspan="8" style="padding:12px; text-align:center; color:#a1a5b7; font-size:11px;">검색 결과가 없습니다.</td></tr>';
+  }
+
+  function switchPage(id, el) {
+    document.querySelectorAll('.page-content').forEach(function(e) { e.classList.remove('active'); });
+    document.querySelectorAll('.page-tab').forEach(function(e) { e.classList.remove('active'); });
+    var target = document.getElementById('page-' + id);
+    if (target) target.classList.add('active');
+    if (el) el.classList.add('active');
+    if (id === 'compose') {
+      var sel = document.getElementById('contentTypeSelect');
+      if (sel) switchContentType(sel.value || 'article');
+    }
+  }
+</script>
+</body>
+</html>
