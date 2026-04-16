@@ -322,7 +322,7 @@
         <div class="spec-item" style="background:#fff8f6; border-left:3px solid var(--accent);"><div style="font-size:12px; font-weight:700; color:var(--accent); padding:2px 0;">변경 항목 상세</div></div>
 
         <div class="spec-item">
-          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">가격 + 대여기간</span></div>
+          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">가격 + 대여기간 표기 추가</span></div>
           <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">헤더 영역에 시리즈 대여 가격 노출</span></div>
           <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">가격 우측에 대여기간 표시<br>예: 3,000원 · 대여기간 30일</span></div>
           <p class="spec-note">대여 완료 상태에서도 가격·기간 유지 노출. 대여기간은 시리즈별 관리자 설정값.</p>
@@ -332,39 +332,39 @@
           <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">헤더 CTA 버튼</span></div>
           <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">상태에 따라 버튼명 분기</span></div>
           <div class="modal-spec">
-            <div class="ms-title">버튼 상태 정의</div>
+            <div class="ms-title">버튼 상태 정의(대여하기 / 첫 화 보기)</div>
             <table>
-              <tr><td style="vertical-align:top;">대여 권한 없음<br><span style="color:#9e9e9e;font-size:10px;">미결제 · 만료</span></td><td>「대여하기」 노출<br>· 비로그인 → 로그인 안내 팝업<br>· 로그인 → 구매 안내 모달<br>&nbsp;&nbsp;타이틀: 이 시리즈는 구매 후 이용할 수 있습니다<br>&nbsp;&nbsp;버튼: 취소 / 결제하기<br>&nbsp;&nbsp;결제하기 → /order 이동</td></tr>
-              <tr><td style="vertical-align:top;">대여 완료<br><span style="color:#9e9e9e;font-size:10px;">유효기간 내</span></td><td>「첫 화 보기」 노출<br>· 목차 최상단 콘텐츠 열기<br>&nbsp;&nbsp;웹기사 → 웹기사 페이지<br>&nbsp;&nbsp;PDF → 뷰어<br>· 최상단 기준: 관리자 설정 정렬 순서</td></tr>
+              <tr><td style="vertical-align:top;">대여 권한 없음<br><span style="color:#9e9e9e;font-size:10px;">미결제 · 만료</span></td><td>「대여하기」 노출<br>· 비로그인 시, 대여하기 버튼 클릭 시 → 로그인 안내 팝업 호출<br>· 로그인 → 구매 안내 모달<br>&nbsp;&nbsp;타이틀: 이 시리즈는 구매 후 이용할 수 있습니다<br>&nbsp;&nbsp;버튼: 취소 / 결제하기<br>&nbsp;&nbsp;결제하기 → /order 이동</td></tr>
+              <tr><td style="vertical-align:top;">대여 완료 상태<br><span style="color:#9e9e9e;font-size:10px;"> 대여 유효기간 이내</span></td><td>「첫 화 보기」버튼명 노출<br>· 목차 중 최상단 콘텐츠 열기(시리즈 구성관리에서 설정된 순)<br>&nbsp;&nbsp;웹기사 → 웹기사 페이지<br>&nbsp;&nbsp;PDF → 뷰어<br>· 최상단 기준: 관리자 설정 정렬 순서</td></tr>
             </table>
           </div>
         </div>
 
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">구독 안내 문구</span></div>
-          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">추후 프리미엄 전용 문구로 교체 예정 (현재 기존 문구 유지)</span></div>
-          <p class="spec-note">구독권 보유자 정책 확정 후 문구 수정.</p>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">추후 프리미엄 전용 문구로 교체 예정 (DX팀으로부터 수급 예정)</span></div>
+          <p class="spec-note">-</p>
         </div>
 
         <div class="spec-item">
-          <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">전체 선택 체크박스</span></div>
-          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">전체 선택 체크박스 및 레이블 제거</span></div>
-          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">각 콘텐츠 행 개별 체크박스 제거</span></div>
+          <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">전체 선택 체크박스 제거 </span></div>
+          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">as-is에 있는 전체 선택 체크박스 및 레이블 제거</span></div>
+          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">as-is에 있는 각 콘텐츠 행 개별 체크박스 제거</span></div>
         </div>
 
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">5</span><span class="spec-label">선택 대여 버튼</span></div>
-          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">목차 상단 우측 「선택 대여」 버튼 제거</span></div>
+          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">as-is에 있는, 목차 상단 우측 「선택 대여」 버튼 제거</span></div>
         </div>
 
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">6</span><span class="spec-label">콘텐츠 단건 가격</span></div>
-          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">각 콘텐츠 하단 단건 가격 비노출</span></div>
+          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">as-is에 있는 각 콘텐츠 하단 단건 가격 비노출</span></div>
         </div>
 
         <div class="spec-item">
-          <div class="spec-item-header"><span class="spec-num">7</span><span class="spec-label">콘텐츠 단건 버튼</span></div>
-          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">「무료」→「보기」</span></div>
+          <div class="spec-item-header"><span class="spec-num">7</span><span class="spec-label">콘텐츠 단건 버튼명 변경</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">as-is「무료」→ to-be「보기」로 변경. 로그인유무, 대여유무와 상관없이 버튼명 '보기'로 노출.</span></div>
           <div class="modal-spec">
             <div class="ms-title">클릭 시 동작</div>
             <table>
