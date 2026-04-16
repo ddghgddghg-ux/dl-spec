@@ -498,26 +498,26 @@
 
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">상품 유형 뱃지</span></div>
-          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">「연재만화」→「프리미엄 시리즈」</span></div>
-          <p class="spec-note">뱃지 색상: 주황 계열 (#fff3e0 배경, #e65100 텍스트).</p>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">「프리미엄 시리즈」</span></div>
+          <p class="spec-note"> 프리미엄 시리즈는 프리미엄 시리즈로 표시. ex. 기존 연재만화, ebook 이 각 콘텐츠 유형 표시하는 것처럼. </p>
         </div>
 
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">상품명</span></div>
-          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">프리미엄 시리즈명 노출</span></div>
+          <div class="spec-change"><span class="tag tag-change">기존 동일</span><span class="text">as-is 콘텐츠명 노출하는 것과 동일하게 프리미엄 시리즈명 노출</span></div>
         </div>
 
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">시리즈 정보</span></div>
-          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">총 N화 · 대여기간 N일 | 목록 펼치기</span></div>
-          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">목록 펼치기 시 회차별 가격 미노출 (회차명만 노출)</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">총 N화 · 대여기간 N일 | 목록 펼치기</span></div>
+          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">목록 펼치기 시 회차별 가격 미노출 (회차명만 노출) , (참고: as-is 연재 만화 같이 회차별로 금액있는 콘텐츠들은 회차별 금액이 표시됨)</span></div>
           <p class="spec-note">대여기간은 시리즈별 관리자 설정값.</p>
         </div>
 
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">상품 가격</span></div>
-          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">시리즈 대여 가격 노출 (예: 3,000원)</span></div>
-          <p class="spec-note">⑤ 총 결제금액과 동일 값.</p>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">시리즈 대여 가격 노출 (예: 3,000원. 각 회차별 가격 X)</span></div>
+          <p class="spec-note">-</p>
         </div>
 
         <div class="spec-item">
@@ -733,10 +733,10 @@
             <div class="ms-title">선택 옵션</div>
             <table>
               <tr><td>기사</td><td>기존과 동일. 과학동아/수학동아/어린이과학동아/어린이수학동아 구분 필터 유지.</td></tr>
-              <tr><td>e매거진</td><td>e매거진 리스트 노출</td></tr>
-              <tr><td>회차 (연재만화)</td><td>연재만화 회차 리스트 노출</td></tr>
-              <tr><td>회차 (시리즈)</td><td>시리즈 회차 리스트 노출</td></tr>
-              <tr><td>eBook</td><td>eBook 리스트 노출</td></tr>
+              <tr><td>e매거진</td><td>e매거진 노출</td></tr>
+              <tr><td>회차 (연재만화)</td><td>연재만화  노출</td></tr>
+              <tr><td>회차 (시리즈)</td><td>시리즈 노출</td></tr>
+              <tr><td>eBook</td><td>eBook 노출</td></tr>
             </table>
           </div>
           <p class="spec-note">유형 선택 시 하단 검색 필터 및 결과 리스트 해당 타입으로 전환.</p>
@@ -748,22 +748,22 @@
           <div class="modal-spec">
             <div class="ms-title">유형별 검색 필터</div>
             <table>
-              <tr><td>기사</td><td>구분 (과학동아·수학동아·어린이과학동아·어린이수학동아) + 검색 (제목 / 간행물ID)</td></tr>
-              <tr><td>e매거진</td><td>구분 (매거진 동일) + 검색 (년 / 월 셀렉트)</td></tr>
-              <tr><td>회차 (연재만화)</td><td>검색 (게시번호 / 제목)</td></tr>
-              <tr><td>회차 (시리즈)</td><td>검색 (게시번호 / 제목)</td></tr>
-              <tr><td>eBook</td><td>검색 (게시번호 / 제목)</td></tr>
+              <tr><td>기사</td><td> 구분 : 과학동아·수학동아·어린이과학동아·어린이수학동아, 검색: 제목 / 간행물ID </td></tr>
+              <tr><td>e매거진</td><td>구분 : 과학동아·수학동아·어린이과학동아·어린이수학동아, 검색: 년 / 월 셀렉트 </td></tr>
+              <tr><td>회차 (연재만화)</td><td>구분 없음. 검색 : 게시번호 / 제목</td></tr>
+              <tr><td>회차 (시리즈)</td><td>구분 없음. 검색 : 게시번호 / 제목</td></tr>
+              <tr><td>eBook</td><td>구분 없음. 검색 : 게시번호 / 제목</td></tr>
             </table>
           </div>
         </div>
 
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">검색 결과 리스트</span></div>
-          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">선택된 유형의 콘텐츠 리스트 노출</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">위에서 선택된 유형의 콘텐츠 리스트 노출하되, 컬럼에 해당하는 값만 노출하고, 없는 값은 미노출</span></div>
           <div class="modal-spec">
             <div class="ms-title">공통 컬럼</div>
             <table>
-              <tr><td>체크박스 / ID / 표지 / 제목 / 구분 / 간행년월 / 노출여부</td></tr>
+              <tr><td>체크박스 / ID(게시번호) / 표지 / 제목 / 구분 / 간행년월 / 노출여부</td></tr>
             </table>
           </div>
           <div class="modal-spec">
@@ -782,7 +782,7 @@
 
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">구성 목록 콘텐츠 유형 표시</span></div>
-          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">컬럼명 「타입」→「콘텐츠 유형」으로 변경<br>값: 기사 / e매거진 / 회차(연재만화) / 회차(시리즈) / eBook</span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">컬럼명 「타입」→「콘텐츠 유형」으로 변경<br>값: as-is PDF -> to-be : 기사 / e매거진 / 회차(연재만화) / 회차(시리즈) / eBook</span></div>
           <p class="spec-note">이종 콘텐츠 혼재 시 유형 식별 가능하도록. 파일 형식(PDF 등) 대신 콘텐츠 등록 유형명으로 표시.</p>
         </div>
 
@@ -930,8 +930,8 @@
           <div class="modal-spec">
             <div class="ms-title">분기 정의</div>
             <table>
-              <tr><td>Y 선택</td><td>일반 시리즈. 구독권 보유자 열람 가능.<br>②③ 필드 노출되나 입력 불가(disabled). 값 초기화.</td></tr>
-              <tr><td>N(별도구매) 선택</td><td>프리미엄 시리즈로 분류. 구독권 보유자도 열람 불가.<br>②③ 필드 입력 가능 + 필수.</td></tr>
+              <tr><td>Y 선택</td><td>as-is 동일. 일반 시리즈. 구독권 보유자 열람 가능.<br>②③ 필드 노출되나 입력 불가(disabled). 값 초기화.</td></tr>
+              <tr><td>N(별도구매) 선택(대분류 '프리미엄 시리즈'만 선택 가능. 다른 대분류는 선택 불가)</td><td>프리미엄 시리즈로 분류. 유료 구매자 외 구독권 보유자, 스마트 권한자 열람 불가해야함.<br>②③ 필드 입력 가능 + 필수.</td></tr>
               <tr><td>Y→N 재선택</td><td>기존 저장된 값 유지 (저장 전 변경은 초기화).</td></tr>
             </table>
           </div>
@@ -940,7 +940,7 @@
 
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">프리미엄 시리즈 가격</span></div>
-          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">N(별도구매) 선택 시 조건부 노출 + 필수 입력</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">N(별도구매) 선택 시 조건부 노출 + 필수 입력 + 최소 1원 이상 입력 필요</span></div>
           <div class="modal-spec">
             <div class="ms-title">필드 정의</div>
             <table>
@@ -954,7 +954,7 @@
 
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">대여기간</span></div>
-          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">N(별도구매) 선택 시 조건부 노출 + 필수 입력</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">N(별도구매) 선택 시 조건부 노출 + 필수 입력, 최소 1일~최대 36500일 입력 가능</span></div>
           <div class="modal-spec">
             <div class="ms-title">필드 정의</div>
             <table>
