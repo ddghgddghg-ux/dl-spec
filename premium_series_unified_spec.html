@@ -186,6 +186,7 @@
 <div class="page-selector">
   <button class="page-tab active" onclick="switchPage('detail', this)">상세 페이지 (/series)</button>
   <button class="page-tab" onclick="switchPage('order', this)">주문결제 페이지 (/order)</button>
+  <button class="page-tab" onclick="switchPage('order-complete', this)">주문완료 페이지 (/order-complete)</button>
   <button class="page-tab" onclick="switchPage('admin', this)">관리자 — 시리즈 등록</button>
   <button class="page-tab" onclick="switchPage('compose', this)">관리자 — 구성 관리</button>
   <button class="page-tab" onclick="switchPage('listing', this)">프리미엄 시리즈 전시 페이지</button>
@@ -801,6 +802,149 @@
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num" style="background:var(--neutral-500);">-</span><span class="spec-label">나머지 구성</span></div>
           <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">추가 버튼 / 순서 변경(↑↓) / 노출일 / 미리보기 / 삭제 / 저장·취소 버튼 기존과 동일</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════
+     주문완료 페이지 (/order-complete)
+════════════════════════════════════ -->
+<div class="page-content" id="page-order-complete">
+  <div class="spec-wrap">
+    <div class="spec-layout">
+
+      <!-- 목업 -->
+      <div class="mockup-panel">
+        <style>
+          .oc2 * { box-sizing: border-box; margin: 0; padding: 0; font-family: Pretendard, arial, sans-serif; }
+          .oc2 { background: #fff; color: #212121; max-width: 680px; }
+          .oc2 .order-tit2 { font-size: 22px; font-weight: 700; margin-bottom: 24px; }
+          .oc2 .sec-title2 { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #212121; }
+          .oc2 .sec-title2 strong { font-size: 16px; font-weight: 700; }
+          .oc2 .order-list2 { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid #e0e0e0; }
+          .oc2 .o-thumb2 { width: 52px; height: 70px; border-radius: 4px; overflow: hidden; background: #eee; flex-shrink: 0; }
+          .oc2 .o-thumb2 img { width: 100%; height: 100%; object-fit: cover; display: block; }
+          .oc2 .cart-wrap2 { flex: 1; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+          .oc2 .info2 { flex: 1; min-width: 0; }
+          .oc2 .pd-flag2 { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-bottom: 6px; background: #fff3e0; color: #e65100; }
+          .oc2 .name2 { font-size: 13px; font-weight: 700; margin-bottom: 6px; word-break: keep-all; }
+          .oc2 .epi-txt2 { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #616161; }
+          .oc2 .epi-txt2 .blue2 { color: #006ad4; font-weight: 700; }
+          .oc2 .epi-btn2 { font-size: 12px; color: #616161; background: none; border: 1px solid #e0e0e0; border-radius: 4px; padding: 2px 8px; cursor: pointer; }
+          .oc2 .epi-list2 { display: none; margin-top: 8px; border: 1px solid #eeeeee; border-radius: 6px; background: #fafafa; padding: 8px 12px; max-height: 160px; overflow-y: auto; }
+          .oc2 .epi-list2.open { display: block; }
+          .oc2 .epi-list2 li { font-size: 12px; color: #616161; padding: 4px 0; border-bottom: 1px solid #eeeeee; list-style: none; }
+          .oc2 .epi-list2 li:last-child { border-bottom: none; }
+          .oc2 .price2 { font-size: 13px; font-weight: 700; white-space: nowrap; }
+          .oc2 .info-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 4px; }
+          .oc2 .info-table th { width: 130px; text-align: left; padding: 12px 0; color: #757575; font-weight: 400; border-bottom: 1px solid #eeeeee; vertical-align: top; }
+          .oc2 .info-table td { padding: 12px 0; border-bottom: 1px solid #eeeeee; color: #212121; }
+          .oc2 .complete-msg2 { text-align: center; font-size: 13px; color: #616161; line-height: 1.8; margin: 24px 0; }
+          .oc2 .btns2 { display: flex; justify-content: center; gap: 10px; }
+          .oc2 .btns2 button { height: 44px; padding: 0 28px; border: none; border-radius: 6px; font-family: Pretendard, arial, sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+          .oc2 .btn-p { background: #42c9dd; color: #fff; }
+          .oc2 .btn-d { background: #424242; color: #fff; }
+        </style>
+
+        <div class="oc2">
+          <p class="order-tit2">주문완료</p>
+
+          <div class="sec-title2"><strong>주문상품</strong></div>
+
+          <div class="order-list2">
+            <div class="o-thumb2">
+              <img src="https://images.dongascience.com/uploads/series/thumbnail/202601/1769647127-0c87d42e-f47d-4473-b370-a2bdef895fb3.png" alt="">
+            </div>
+            <div class="cart-wrap2">
+              <div class="info2">
+                <!-- ① 상품 유형 뱃지 -->
+                <div class="hl" style="display:inline-block;">
+                  <span class="hl-label">1</span>
+                  <span class="pd-flag2">프리미엄 시리즈</span>
+                </div>
+                <p class="name2">이제 이름으로 불러 주세요! 우리동네 생물도감 3종</p>
+                <!-- ② 목록 펼치기 — 회차명만 -->
+                <div class="hl" style="display:block; margin-top:4px;">
+                  <span class="hl-label">2</span>
+                  <div class="epi-txt2">
+                    <div>총 <span class="blue2">9</span>개</div>
+                    <button class="epi-btn2" onclick="var l=document.getElementById('ocEpiList'); l.classList.toggle('open'); this.textContent=l.classList.contains('open')?'접기 ▴':'목록 ▾'">목록 ▾</button>
+                  </div>
+                  <ul class="epi-list2" id="ocEpiList">
+                    <li>[시민과학풀씨_리버쉘] 외래거북 10종 도감</li>
+                    <li>[시민과학풀씨_노린재의 노린내를 찾아서] 우리동네 노린재 사진&amp;향 도감</li>
+                    <li>[시민과학풀씨_개천에서 새난다] 우리동네 하천 새 도감</li>
+                    <li>[어린이과학동아] 늑대거북부터 노린재까지, 시민의 눈으로 샅샅이 찾는다!</li>
+                    <li>[어린이과학동아] 하천과 새의 연결고리를 찾아라!</li>
+                    <li>[어린이과학동아] 하얗게 변한 조개를 찾아라</li>
+                    <li>[어린이과학동아] 해충으로부터 왕벚나무를 지켜라</li>
+                    <li>[어린이과학동아] 외래거북 대학교에 산다?</li>
+                    <li>[어린이과학동아] 외래거북 대학교에 산다?</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="price2">3,000원</div>
+            </div>
+          </div>
+
+          <div style="margin-top:24px;">
+            <div class="sec-title2"><strong>주문 정보</strong></div>
+            <table class="info-table">
+              <tr><th>주문번호</th><td>2604220005</td></tr>
+              <tr><th>주문자명</th><td>박정은</td></tr>
+              <tr><th>결제수단</th><td>포인트</td></tr>
+              <tr><th>총 상품금액</th><td>3,000원</td></tr>
+              <tr><th>DS포인트 사용</th><td>(-) 3,000P</td></tr>
+              <tr><th>총 결제금액</th><td><strong style="color:#42c9dd; font-size:16px;">0원</strong></td></tr>
+            </table>
+          </div>
+
+          <div class="complete-msg2">
+            대여가 완료되었습니다.<br>
+            첫 번째 콘텐츠부터 바로 보실 수 있습니다.
+          </div>
+
+          <div class="btns2">
+            <button class="btn-p">바로 보기</button>
+            <button class="btn-d">주문내역 조회</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 스펙 패널 -->
+      <div class="spec-panel">
+        <div class="spec-item" style="background:#fff8f6; border-left:3px solid var(--accent);"><div style="font-size:12px; font-weight:700; color:var(--accent); padding:2px 0;">변경 항목 상세</div></div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">상품 유형 뱃지</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">「프리미엄 시리즈」</span></div>
+          <p class="spec-note">프리미엄 시리즈는 프리미엄 시리즈로 표시. ex. 기존 연재만화, eBook이 각 콘텐츠 유형 표시하는 것처럼.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">목록 펼치기 — 회차별 가격 제거</span></div>
+          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">목록 펼치기 시 회차별 가격(span.price) 미노출</span></div>
+          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">회차명(span.name)만 노출. 목록 펼치기/접기 동작 기존 동일.</span></div>
+          <p class="spec-note">as-is 시리즈 목록에는 회차별 가격이 표시됨. 프리미엄 시리즈는 단건 결제 없으므로 가격 미노출.</p>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">바로 보기 버튼</span></div>
+          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">기존 동일. 해당 시리즈 첫 화 뷰어 또는 웹기사 상세 페이지 호출.</span></div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">주문내역 조회 버튼</span></div>
+          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">기존 동일.</span></div>
+        </div>
+
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num" style="background:var(--neutral-500);">-</span><span class="spec-label">나머지 구성</span></div>
+          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">주문 정보 테이블 / 완료 안내 문구 기존 동일</span></div>
         </div>
 
       </div>
