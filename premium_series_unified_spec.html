@@ -340,7 +340,16 @@
           <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">가격 + 대여기간 표기 추가</span></div>
           <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">헤더 영역에 시리즈 대여 가격 노출</span></div>
           <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">가격 우측에 대여기간 표시<br>예: 3,000원 · 대여기간 30일</span></div>
-          <p class="spec-note">대여 완료 상태에서도 가격·기간 유지 노출. 대여기간은 시리즈별 관리자 설정값.</p>
+          <div class="modal-spec">
+            <div class="ms-title">대여기간 표시 방식</div>
+            <table>
+              <tr><td>데이터 출처</td><td>관리자 시리즈 등록 시 설정한 대여기간 값 (일수로 저장)</td></tr>
+              <tr><td>365일 미만</td><td>「N일」로 표시. 예: 대여기간 30일</td></tr>
+              <tr><td>365일 이상, 잔여일 없음</td><td>「N년」으로 표시. 예: 대여기간 2년</td></tr>
+              <tr><td>365일 이상, 잔여일 있음</td><td>「N년 N일」로 표시. 예: 대여기간 1년 15일</td></tr>
+            </table>
+          </div>
+          <p class="spec-note">대여 완료 상태에서도 가격·기간 유지 노출.</p>
         </div>
 
         <div class="spec-item">
@@ -1042,9 +1051,11 @@
           <div class="hl" id="rentalPeriodRow" style="display:flex; align-items:center; gap:8px; padding:8px; background:#fff8f6; border-radius:6px;">
             <span class="hl-label">3</span>
             <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">대여기간 <span style="color:#f1416c;">*</span></label>
-            <input type="number" id="rentalPeriodInput" placeholder="예: 30" style="width:120px; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#fff;">
-            <span style="font-size:12px; color:#5e6278;">일</span>
-            <span style="font-size:11px; color:#a1a5b7; margin-left:4px;">숫자만 입력 (예: 30, 60, 90)</span>
+            <input type="number" id="rentalPeriodInput" placeholder="예: 30" style="width:100px; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#fff;">
+            <select style="height:32px; padding:0 8px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; margin-left:6px;">
+              <option value="day">일</option>
+              <option value="year">년</option>
+            </select>
           </div>
 
         </div>
@@ -1110,16 +1121,30 @@
 
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">대여기간</span></div>
-          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">N(별도구매) 선택 시 조건부 노출 + 필수 입력, 최소 1일~최대 36500일 입력 가능</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">N(별도구매) 선택 시 조건부 노출 + 필수 입력</span></div>
           <div class="modal-spec">
             <div class="ms-title">필드 정의</div>
             <table>
-              <tr><td>입력 타입</td><td>숫자 (정수, 일 단위)</td></tr>
+              <tr><td>입력 방식</td><td>숫자 입력 + 단위 셀렉트 (일 / 년)</td></tr>
               <tr><td>활성 조건</td><td>구독요금제 N(별도구매) 선택 시</td></tr>
               <tr><td>표시 위치</td><td>프리미엄 시리즈 가격 필드 바로 하단</td></tr>
             </table>
           </div>
-          <p class="spec-note">상세 페이지 ① 대여기간 표시, /order 페이지 ③ 대여기간 N일과 연동. 대여 만료 기준 일수로 사용.</p>
+          <div class="modal-spec">
+            <div class="ms-title">백엔드 처리</div>
+            <table>
+              <tr><td>저장</td><td>일수로 변환하여 저장. 년 선택 시 입력값 × 365일로 계산.</td></tr>
+            </table>
+          </div>
+          <div class="modal-spec">
+            <div class="ms-title">프론트 노출 기준 (저장된 일수 기준 역산)</div>
+            <table>
+              <tr><td>365일 미만</td><td>「N일」로 표시. 예: 대여기간 30일</td></tr>
+              <tr><td>365일 이상, 잔여일 없음</td><td>「N년」으로 표시. 예: 대여기간 2년</td></tr>
+              <tr><td>365일 이상, 잔여일 있음</td><td>「N년 N일」로 표시. 예: 대여기간 1년 15일</td></tr>
+            </table>
+          </div>
+          <p class="spec-note">상세 페이지 ① 대여기간 표시, /order 페이지 ③ 대여기간과 연동. 대여 만료 기준으로 사용.</p>
         </div>
 
         <div class="spec-item">
