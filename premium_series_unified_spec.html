@@ -175,17 +175,18 @@
 <div class="doc-header-bar">
   <div class="doc-title">프리미엄 시리즈 기획 스펙</div>
   <div class="doc-meta">
-    <span><strong>최종 작성일</strong> 2026-04-24</span>
-    <span><strong>작성자</strong> 서비스기획팀 박정은</span>
+    <span><strong>작성일</strong> 2026-04-14</span>
+    <span><strong>작성자</strong> 서비스기획팀</span>
+    <span><strong>상태</strong> 검토중</span>
     <span><strong>대상</strong> 개발 / 디자인</span>
   </div>
 </div>
 
 <!-- 페이지 탭 셀렉터 -->
 <div class="page-selector">
+  <button class="page-tab" onclick="switchPage('policy', this)">열람 권한 정책</button>
   <button class="page-tab active" onclick="switchPage('detail', this)">상세 페이지 (/series)</button>
   <button class="page-tab" onclick="switchPage('order', this)">주문결제 페이지 (/order)</button>
-  <button class="page-tab" onclick="switchPage('order-complete', this)">주문완료 페이지 (/order-complete)</button>
   <button class="page-tab" onclick="switchPage('admin', this)">관리자 — 시리즈 등록</button>
   <button class="page-tab" onclick="switchPage('compose', this)">관리자 — 구성 관리</button>
   <button class="page-tab" onclick="switchPage('listing', this)">프리미엄 시리즈 전시 페이지</button>
@@ -204,6 +205,63 @@
 <!-- ════════════════════════════════════
      상세 페이지
 ════════════════════════════════════ -->
+<!-- ════════════════════════════════════
+     콘텐츠 열람 권한 정책
+════════════════════════════════════ -->
+<div class="page-content" id="page-policy">
+  <div class="spec-wrap">
+    <div style="max-width:700px; margin:0 auto; padding:32px 0;">
+
+      <div style="font-size:16px; font-weight:700; color:#212121; margin-bottom:24px; padding-bottom:12px; border-bottom:2px solid #212121;">콘텐츠 열람 권한 정책</div>
+
+      <div class="spec-item" style="margin-bottom:20px;">
+        <div class="spec-item-header"><span class="spec-num" style="background:#7c3aed;">P</span><span class="spec-label">기본 원칙</span></div>
+        <p class="spec-note" style="font-size:13px; line-height:1.8;">
+          콘텐츠 열람 권한은 <strong>접근 컨텍스트(어디서 열람하느냐)</strong>를 기준으로 적용된다.<br>
+          동일 콘텐츠라도 프리미엄 시리즈 상세에서 접근하는 경우와 콘텐츠 직접 URL로 접근하는 경우의 권한 체크 방식이 다르다.
+        </p>
+      </div>
+
+      <div class="spec-item">
+        <div class="spec-item-header"><span class="spec-num" style="background:#7c3aed;">1</span><span class="spec-label">프리미엄 시리즈 상세에서 콘텐츠 접근</span></div>
+        <div class="modal-spec">
+          <table>
+            <tr><th style="width:200px; text-align:left; padding:8px; background:#f9f9f9; border:1px solid #e1e3ea;">상태</th><th style="text-align:left; padding:8px; background:#f9f9f9; border:1px solid #e1e3ea;">결과</th></tr>
+            <tr><td style="padding:8px; border:1px solid #e1e3ea;">비로그인</td><td style="padding:8px; border:1px solid #e1e3ea;">로그인 안내 팝업</td></tr>
+            <tr><td style="padding:8px; border:1px solid #e1e3ea;">로그인 + 프리미엄 미결제 · 만료<br><span style="font-size:10px; color:#9e9e9e;">구독권 보유 여부 무관</span></td><td style="padding:8px; border:1px solid #e1e3ea;">구매 안내 모달 노출 → /order 이동</td></tr>
+            <tr><td style="padding:8px; border:1px solid #e1e3ea;">프리미엄 결제 완료</td><td style="padding:8px; border:1px solid #e1e3ea;">콘텐츠로 이동.<br>이동 시 프리미엄 결제 여부 + 구독권 여부 동시 체크.<br>둘 중 하나 유효하면 열람 가능.</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="spec-item">
+        <div class="spec-item-header"><span class="spec-num" style="background:#7c3aed;">2</span><span class="spec-label">콘텐츠 직접 URL 접근</span></div>
+        <div class="modal-spec">
+          <table>
+            <tr><th style="width:200px; text-align:left; padding:8px; background:#f9f9f9; border:1px solid #e1e3ea;">상태</th><th style="text-align:left; padding:8px; background:#f9f9f9; border:1px solid #e1e3ea;">결과</th></tr>
+            <tr><td style="padding:8px; border:1px solid #e1e3ea;">구독권 보유 OR 프리미엄 결제 완료</td><td style="padding:8px; border:1px solid #e1e3ea;">열람 가능</td></tr>
+            <tr><td style="padding:8px; border:1px solid #e1e3ea;">구독권 없음 + 프리미엄 미결제</td><td style="padding:8px; border:1px solid #e1e3ea;">열람 불가</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="spec-item">
+        <div class="spec-item-header"><span class="spec-num" style="background:#7c3aed;">3</span><span class="spec-label">예시 — 야구왕 허슬기 1화</span></div>
+        <div class="modal-spec">
+          <table>
+            <tr><th style="width:220px; text-align:left; padding:8px; background:#f9f9f9; border:1px solid #e1e3ea;">상태</th><th style="text-align:left; padding:8px; background:#f9f9f9; border:1px solid #e1e3ea;">프리미엄 시리즈 상세 → 보기</th><th style="text-align:left; padding:8px; background:#f9f9f9; border:1px solid #e1e3ea;">직접 URL 접근</th></tr>
+            <tr><td style="padding:8px; border:1px solid #e1e3ea;">구독권 O + 프리미엄 미결제</td><td style="padding:8px; border:1px solid #e1e3ea;">구매 안내 모달</td><td style="padding:8px; border:1px solid #e1e3ea;">열람 가능</td></tr>
+            <tr><td style="padding:8px; border:1px solid #e1e3ea;">구독권 X + 프리미엄 결제 완료</td><td style="padding:8px; border:1px solid #e1e3ea;">열람 가능</td><td style="padding:8px; border:1px solid #e1e3ea;">열람 가능</td></tr>
+            <tr><td style="padding:8px; border:1px solid #e1e3ea;">구독권 O + 프리미엄 결제 완료</td><td style="padding:8px; border:1px solid #e1e3ea;">열람 가능</td><td style="padding:8px; border:1px solid #e1e3ea;">열람 가능</td></tr>
+            <tr><td style="padding:8px; border:1px solid #e1e3ea;">구독권 X + 프리미엄 미결제</td><td style="padding:8px; border:1px solid #e1e3ea;">구매 안내 모달</td><td style="padding:8px; border:1px solid #e1e3ea;">열람 불가</td></tr>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <div class="page-content active" id="page-detail">
   <div class="spec-wrap">
     <div class="spec-layout">
@@ -219,12 +277,12 @@
             </div>
           </div>
           
+          <div class="hl" style="display:inline-block;">
+            <span class="hl-label">1</span>
+               <span class="pd-flag premium">프리미엄 시리즈</span>
+          </div>
+          
           <div class="thumb-info">
-            <!-- 0 프리미엄 시리즈 딱지 -->
-            <div class="hl" style="display:inline-block; margin-bottom:6px;">
-              <span class="hl-label">0</span>
-              <span class="pd-flag premium">프리미엄 시리즈</span>
-            </div>
             <div><p class="t-name">이제 이름으로 불러 주세요! 우리동네 생물도감 3종</p><span class="t-sub">지구사랑탐사대X시민과학풀씨 4기</span></div>
             <div><p class="t-desc">어린이과학동아, 지구사랑탐사대, 개천에서 새난다, 노린내를 찾아서, 리버쉘</p><p class="t-pub">동아사이언스 · 2026년 01월 27일</p></div>
             <div class="t-subinfo"><span class="t-total">총 9화</span><span class="t-flag">완결</span></div>
@@ -245,9 +303,8 @@
             <div class="hl">
               <span class="hl-label">3</span>
               <div class="t-caution">
-                <P>본 콘텐츠는 구독 상품(Smart 2.0, d라이브러리 패스 / All패스) 이용자도 별도로 구매가 필요합니다.</P>
+                <p>구독 상품(Smart+, d라이브러리 Basic/All 패스) 구매자는 무료로 이용할 수 있습니다.</p>
                 <p>별도의 설치 없이 인터넷으로 쉽게 읽는 e북 뷰어입니다. WI-FI 환경에서 사용을 권장합니다.</p>
-                <p>DS포인트로도 구매하실 수 있습니다.</p>                
               </div>
             </div>
           </div>
@@ -331,25 +388,10 @@
         </div>
 
         <div class="spec-item">
-          <div class="spec-item-header"><span class="spec-num">0</span><span class="spec-label">프리미엄 시리즈 딱지 추가</span></div>
-          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">시리즈 타이틀 상단에 「프리미엄 시리즈」 딱지 노출</span></div>
-          <p class="spec-note">프리미엄 시리즈 딱지 추가.</p>
-        </div>
-
-        <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">가격 + 대여기간 표기 추가</span></div>
           <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">헤더 영역에 시리즈 대여 가격 노출</span></div>
           <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">가격 우측에 대여기간 표시<br>예: 3,000원 · 대여기간 30일</span></div>
-          <div class="modal-spec">
-            <div class="ms-title">대여기간 표시 방식</div>
-            <table>
-              <tr><td>데이터 출처</td><td>관리자 시리즈 등록 시 설정한 대여기간 값 (일수로 저장)</td></tr>
-              <tr><td>365일 미만</td><td>「N일」로 표시. 예: 대여기간 30일</td></tr>
-              <tr><td>365일 이상, 잔여일 없음</td><td>「N년」으로 표시. 예: 대여기간 2년</td></tr>
-              <tr><td>365일 이상, 잔여일 있음</td><td>「N년 N일」로 표시. 예: 대여기간 1년 15일</td></tr>
-            </table>
-          </div>
-          <p class="spec-note">대여 완료 상태에서도 가격·기간 유지 노출.</p>
+          <p class="spec-note">대여 완료 상태에서도 가격·기간 유지 노출. 대여기간은 시리즈별 관리자 설정값.</p>
         </div>
 
         <div class="spec-item">
@@ -366,8 +408,7 @@
 
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">구독 안내 문구</span></div>
-          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">문구 변경되어야 함  <br>
-            - 본 콘텐츠는 구독 상품(Smart 2.0, d라이브러리 패스 / All패스) 이용자도 별도로 구매가 필요합니다. <br>- 별도의 설치 없이 인터넷으로 쉽게 읽는 e북 뷰어입니다. WI-FI 환경에서 사용을 권장합니다. <br>- DS포인트로도 구매하실 수 있습니다. </span></div>
+          <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">추후 프리미엄 전용 문구로 교체 예정 (DX팀으로부터 수급 예정)</span></div>
           <p class="spec-note">-</p>
         </div>
 
@@ -391,11 +432,18 @@
           <div class="spec-item-header"><span class="spec-num">7</span><span class="spec-label">콘텐츠 단건 버튼명 변경</span></div>
           <div class="spec-change"><span class="tag tag-change">변경</span><span class="text">as-is「무료」→ to-be「보기」로 변경. 로그인유무, 대여유무와 상관없이 버튼명 '보기'로 노출.</span></div>
           <div class="modal-spec">
-            <div class="ms-title">클릭 시 동작</div>
+            <div class="ms-title">클릭 시 동작 — 프리미엄 시리즈 상세에서 보기 클릭</div>
             <table>
               <tr><td>비로그인</td><td>로그인 안내 팝업</td></tr>
-              <tr><td>로그인 · 미구매 · 만료</td><td>구매 안내 모달<br>· 타이틀: 이 시리즈는 구매 후 이용할 수 있습니다<br>· 버튼: 취소 / 결제하기<br>· 결제하기 → /order 이동</td></tr>
-              <tr><td>대여 완료</td><td>해당 콘텐츠 열기<br>웹기사 → 웹기사 / PDF → 뷰어</td></tr>
+              <tr><td>로그인 · 프리미엄 미결제 · 만료<br><span style="font-size:10px; color:#9e9e9e;">구독권 보유 여부 무관</span></td><td>구매 안내 모달<br>· 타이틀: 이 시리즈는 구매 후 이용할 수 있습니다<br>· 버튼: 취소 / 결제하기<br>· 결제하기 → /order 이동</td></tr>
+              <tr><td>프리미엄 결제 완료</td><td>해당 콘텐츠로 이동.<br>이동 시 프리미엄 결제 여부 + 구독권 여부 동시 체크.<br>둘 중 하나 유효하면 열람 가능.<br>웹기사 → 웹기사 / PDF → 뷰어</td></tr>
+            </table>
+          </div>
+          <div class="modal-spec">
+            <div class="ms-title">콘텐츠 직접 URL 접근 시</div>
+            <table>
+              <tr><td>구독권 보유 OR 프리미엄 결제 완료</td><td>열람 가능</td></tr>
+              <tr><td>구독권 없음 + 프리미엄 미결제</td><td>열람 불가</td></tr>
             </table>
           </div>
         </div>
@@ -821,149 +869,6 @@
 
 
 <!-- ════════════════════════════════════
-     주문완료 페이지 (/order-complete)
-════════════════════════════════════ -->
-<div class="page-content" id="page-order-complete">
-  <div class="spec-wrap">
-    <div class="spec-layout">
-
-      <!-- 목업 -->
-      <div class="mockup-panel">
-        <style>
-          .oc2 * { box-sizing: border-box; margin: 0; padding: 0; font-family: Pretendard, arial, sans-serif; }
-          .oc2 { background: #fff; color: #212121; max-width: 680px; }
-          .oc2 .order-tit2 { font-size: 22px; font-weight: 700; margin-bottom: 24px; }
-          .oc2 .sec-title2 { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid #212121; }
-          .oc2 .sec-title2 strong { font-size: 16px; font-weight: 700; }
-          .oc2 .order-list2 { display: flex; align-items: flex-start; gap: 14px; padding: 14px 0; border-bottom: 1px solid #e0e0e0; }
-          .oc2 .o-thumb2 { width: 52px; height: 70px; border-radius: 4px; overflow: hidden; background: #eee; flex-shrink: 0; }
-          .oc2 .o-thumb2 img { width: 100%; height: 100%; object-fit: cover; display: block; }
-          .oc2 .cart-wrap2 { flex: 1; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-          .oc2 .info2 { flex: 1; min-width: 0; }
-          .oc2 .pd-flag2 { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-bottom: 6px; background: #fff3e0; color: #e65100; }
-          .oc2 .name2 { font-size: 13px; font-weight: 700; margin-bottom: 6px; word-break: keep-all; }
-          .oc2 .epi-txt2 { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #616161; }
-          .oc2 .epi-txt2 .blue2 { color: #006ad4; font-weight: 700; }
-          .oc2 .epi-btn2 { font-size: 12px; color: #616161; background: none; border: 1px solid #e0e0e0; border-radius: 4px; padding: 2px 8px; cursor: pointer; }
-          .oc2 .epi-list2 { display: none; margin-top: 8px; border: 1px solid #eeeeee; border-radius: 6px; background: #fafafa; padding: 8px 12px; max-height: 160px; overflow-y: auto; }
-          .oc2 .epi-list2.open { display: block; }
-          .oc2 .epi-list2 li { font-size: 12px; color: #616161; padding: 4px 0; border-bottom: 1px solid #eeeeee; list-style: none; }
-          .oc2 .epi-list2 li:last-child { border-bottom: none; }
-          .oc2 .price2 { font-size: 13px; font-weight: 700; white-space: nowrap; }
-          .oc2 .info-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 4px; }
-          .oc2 .info-table th { width: 130px; text-align: left; padding: 12px 0; color: #757575; font-weight: 400; border-bottom: 1px solid #eeeeee; vertical-align: top; }
-          .oc2 .info-table td { padding: 12px 0; border-bottom: 1px solid #eeeeee; color: #212121; }
-          .oc2 .complete-msg2 { text-align: center; font-size: 13px; color: #616161; line-height: 1.8; margin: 24px 0; }
-          .oc2 .btns2 { display: flex; justify-content: center; gap: 10px; }
-          .oc2 .btns2 button { height: 44px; padding: 0 28px; border: none; border-radius: 6px; font-family: Pretendard, arial, sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
-          .oc2 .btn-p { background: #42c9dd; color: #fff; }
-          .oc2 .btn-d { background: #424242; color: #fff; }
-        </style>
-
-        <div class="oc2">
-          <p class="order-tit2">주문완료</p>
-
-          <div class="sec-title2"><strong>주문상품</strong></div>
-
-          <div class="order-list2">
-            <div class="o-thumb2">
-              <img src="https://images.dongascience.com/uploads/series/thumbnail/202601/1769647127-0c87d42e-f47d-4473-b370-a2bdef895fb3.png" alt="">
-            </div>
-            <div class="cart-wrap2">
-              <div class="info2">
-                <!-- ① 상품 유형 뱃지 -->
-                <div class="hl" style="display:inline-block;">
-                  <span class="hl-label">1</span>
-                  <span class="pd-flag2">프리미엄 시리즈</span>
-                </div>
-                <p class="name2">이제 이름으로 불러 주세요! 우리동네 생물도감 3종</p>
-                <!-- ② 목록 펼치기 — 회차명만 -->
-                <div class="hl" style="display:block; margin-top:4px;">
-                  <span class="hl-label">2</span>
-                  <div class="epi-txt2">
-                    <div>총 <span class="blue2">9</span>개</div>
-                    <button class="epi-btn2" onclick="var l=document.getElementById('ocEpiList'); l.classList.toggle('open'); this.textContent=l.classList.contains('open')?'접기 ▴':'목록 ▾'">목록 ▾</button>
-                  </div>
-                  <ul class="epi-list2" id="ocEpiList">
-                    <li>[시민과학풀씨_리버쉘] 외래거북 10종 도감</li>
-                    <li>[시민과학풀씨_노린재의 노린내를 찾아서] 우리동네 노린재 사진&amp;향 도감</li>
-                    <li>[시민과학풀씨_개천에서 새난다] 우리동네 하천 새 도감</li>
-                    <li>[어린이과학동아] 늑대거북부터 노린재까지, 시민의 눈으로 샅샅이 찾는다!</li>
-                    <li>[어린이과학동아] 하천과 새의 연결고리를 찾아라!</li>
-                    <li>[어린이과학동아] 하얗게 변한 조개를 찾아라</li>
-                    <li>[어린이과학동아] 해충으로부터 왕벚나무를 지켜라</li>
-                    <li>[어린이과학동아] 외래거북 대학교에 산다?</li>
-                    <li>[어린이과학동아] 외래거북 대학교에 산다?</li>
-                  </ul>
-                </div>
-              </div>
-              <div class="price2">3,000원</div>
-            </div>
-          </div>
-
-          <div style="margin-top:24px;">
-            <div class="sec-title2"><strong>주문 정보</strong></div>
-            <table class="info-table">
-              <tr><th>주문번호</th><td>2604220005</td></tr>
-              <tr><th>주문자명</th><td>박정은</td></tr>
-              <tr><th>결제수단</th><td>포인트</td></tr>
-              <tr><th>총 상품금액</th><td>3,000원</td></tr>
-              <tr><th>DS포인트 사용</th><td>(-) 3,000P</td></tr>
-              <tr><th>총 결제금액</th><td><strong style="color:#42c9dd; font-size:16px;">0원</strong></td></tr>
-            </table>
-          </div>
-
-          <div class="complete-msg2">
-            대여가 완료되었습니다.<br>
-            첫 번째 콘텐츠부터 바로 보실 수 있습니다.
-          </div>
-
-          <div class="btns2">
-            <button class="btn-p">바로 보기</button>
-            <button class="btn-d">주문내역 조회</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 스펙 패널 -->
-      <div class="spec-panel">
-        <div class="spec-item" style="background:#fff8f6; border-left:3px solid var(--accent);"><div style="font-size:12px; font-weight:700; color:var(--accent); padding:2px 0;">변경 항목 상세</div></div>
-
-        <div class="spec-item">
-          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">상품 유형 뱃지</span></div>
-          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">「프리미엄 시리즈」</span></div>
-          <p class="spec-note">프리미엄 시리즈는 프리미엄 시리즈로 표시. ex. 기존 연재만화, eBook이 각 콘텐츠 유형 표시하는 것처럼.</p>
-        </div>
-
-        <div class="spec-item">
-          <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">목록 펼치기 — 회차별 가격 제거</span></div>
-          <div class="spec-change"><span class="tag tag-remove">제거</span><span class="text">목록 펼치기 시 회차별 가격(span.price) 미노출</span></div>
-          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">회차명(span.name)만 노출. 목록 펼치기/접기 동작 기존 동일.</span></div>
-          <p class="spec-note">as-is 시리즈 목록에는 회차별 가격이 표시됨. 프리미엄 시리즈는 단건 결제 없으므로 가격 미노출.</p>
-        </div>
-
-        <div class="spec-item">
-          <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">바로 보기 버튼</span></div>
-          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">기존 동일. 해당 시리즈 첫 화 뷰어 또는 웹기사 상세 페이지 호출.</span></div>
-        </div>
-
-        <div class="spec-item">
-          <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">주문내역 조회 버튼</span></div>
-          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">기존 동일.</span></div>
-        </div>
-
-        <div class="spec-item">
-          <div class="spec-item-header"><span class="spec-num" style="background:var(--neutral-500);">-</span><span class="spec-label">나머지 구성</span></div>
-          <div class="spec-change"><span class="tag tag-keep">유지</span><span class="text">주문 정보 테이블 / 완료 안내 문구 기존 동일</span></div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ════════════════════════════════════
      관리자 — 시리즈 등록 페이지
 ════════════════════════════════════ -->
 <div class="page-content" id="page-admin">
@@ -1052,11 +957,9 @@
           <div class="hl" id="rentalPeriodRow" style="display:flex; align-items:center; gap:8px; padding:8px; background:#fff8f6; border-radius:6px;">
             <span class="hl-label">3</span>
             <label style="width:140px; color:#5e6278; font-weight:600; flex-shrink:0;">대여기간 <span style="color:#f1416c;">*</span></label>
-            <input type="number" id="rentalPeriodInput" placeholder="예: 30" style="width:100px; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#fff;">
-            <select style="height:32px; padding:0 8px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; margin-left:6px;">
-              <option value="day">일</option>
-              <option value="year">년</option>
-            </select>
+            <input type="number" id="rentalPeriodInput" placeholder="예: 30" style="width:120px; height:32px; border:1px solid #e1e3ea; border-radius:6px; font-size:12px; padding:0 10px; background:#fff;">
+            <span style="font-size:12px; color:#5e6278;">일</span>
+            <span style="font-size:11px; color:#a1a5b7; margin-left:4px;">숫자만 입력 (예: 30, 60, 90)</span>
           </div>
 
         </div>
@@ -1122,30 +1025,16 @@
 
         <div class="spec-item">
           <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">대여기간</span></div>
-          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">N(별도구매) 선택 시 조건부 노출 + 필수 입력</span></div>
+          <div class="spec-change"><span class="tag tag-add">추가</span><span class="text">N(별도구매) 선택 시 조건부 노출 + 필수 입력, 최소 1일~최대 36500일 입력 가능</span></div>
           <div class="modal-spec">
             <div class="ms-title">필드 정의</div>
             <table>
-              <tr><td>입력 방식</td><td>숫자 입력 + 단위 셀렉트 (일 / 년)</td></tr>
+              <tr><td>입력 타입</td><td>숫자 (정수, 일 단위)</td></tr>
               <tr><td>활성 조건</td><td>구독요금제 N(별도구매) 선택 시</td></tr>
               <tr><td>표시 위치</td><td>프리미엄 시리즈 가격 필드 바로 하단</td></tr>
             </table>
           </div>
-          <div class="modal-spec">
-            <div class="ms-title">백엔드 처리</div>
-            <table>
-              <tr><td>저장</td><td>일수로 변환하여 저장. 년 선택 시 입력값 × 365일로 계산.</td></tr>
-            </table>
-          </div>
-          <div class="modal-spec">
-            <div class="ms-title">프론트 노출 기준 (저장된 일수 기준 역산)</div>
-            <table>
-              <tr><td>365일 미만</td><td>「N일」로 표시. 예: 대여기간 30일</td></tr>
-              <tr><td>365일 이상, 잔여일 없음</td><td>「N년」으로 표시. 예: 대여기간 2년</td></tr>
-              <tr><td>365일 이상, 잔여일 있음</td><td>「N년 N일」로 표시. 예: 대여기간 1년 15일</td></tr>
-            </table>
-          </div>
-          <p class="spec-note">상세 페이지 ① 대여기간 표시, /order 페이지 ③ 대여기간과 연동. 대여 만료 기준으로 사용.</p>
+          <p class="spec-note">상세 페이지 ① 대여기간 표시, /order 페이지 ③ 대여기간 N일과 연동. 대여 만료 기준 일수로 사용.</p>
         </div>
 
         <div class="spec-item">
