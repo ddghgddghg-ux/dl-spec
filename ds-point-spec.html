@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DS포인트 현황 대시보드 기획 스펙</title>
+<style>
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+  :root {
+    --primary: #1e3a5f; --accent: #e85d3a;
+    --neutral-900: #212121; --neutral-800: #424242; --neutral-700: #616161;
+    --neutral-600: #757575; --neutral-500: #9e9e9e; --neutral-400: #bdbdbd;
+    --neutral-300: #e0e0e0; --neutral-200: #eeeeee; --neutral-100: #fafafa;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: Pretendard, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; }
+  body { background: #f0f0f0; color: var(--neutral-900); }
+
+  .doc-header-bar { background: #1e3a5f; border-bottom: 1px solid #2a4f7a; padding: 14px 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; position: sticky; top: 0; z-index: 100; }
+  .doc-title { font-size: 15px; font-weight: 700; color: #fff; }
+  .doc-meta { font-size: 12px; color: #a0b8d0; display: flex; gap: 16px; }
+  .doc-meta strong { color: #d0e4f0; font-weight: 600; }
+
+  .page-selector { background: #fff; border-bottom: 1px solid var(--neutral-300); padding: 0 32px; display: flex; align-items: center; position: sticky; top: 49px; z-index: 99; overflow-x: auto; }
+  .page-tab { font-size: 13px; font-weight: 400; color: var(--neutral-600); padding: 12px 20px; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; background: none; border-top: none; border-left: none; border-right: none; white-space: nowrap; }
+  .page-tab:hover { color: var(--neutral-900); background: var(--neutral-100); }
+  .page-tab.active { color: var(--neutral-900); font-weight: 700; border-bottom: 3px solid var(--neutral-900); }
+
+  .legend-bar { background: #fff; border-bottom: 1px solid var(--neutral-200); padding: 8px 32px; display: flex; gap: 16px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--neutral-700); }
+  .badge { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 9px; font-weight: 700; }
+  .tag { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 3px; }
+  .tag-add    { background: #e8f5e9; color: #2e7d32; }
+  .tag-change { background: #fff8e1; color: #f57f17; }
+  .tag-keep   { background: #f3f3f3; color: #616161; }
+  .tag-req    { background: #fdecea; color: #c62828; }
+
+  .page-content { display: none; }
+  .page-content.active { display: block; }
+
+  .spec-wrap { padding: 24px 32px; }
+  .spec-section-title { font-size: 13px; font-weight: 700; color: var(--neutral-600); margin-bottom: 12px; letter-spacing: 0.4px; }
+  .spec-layout { display: flex; gap: 0; align-items: flex-start; background: #fff; border: 1px solid var(--neutral-300); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; }
+  .mockup-panel { flex: 1; min-width: 0; padding: 24px; border-right: 1px solid var(--neutral-200); }
+  .spec-panel { width: 320px; flex-shrink: 0; }
+  .spec-item { padding: 12px 14px; border-bottom: 1px solid var(--neutral-200); }
+  .spec-item:last-child { border-bottom: none; }
+  .spec-item-header { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
+  .spec-num { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 9px; font-weight: 700; flex-shrink: 0; }
+  .spec-label { font-size: 13px; font-weight: 700; color: var(--neutral-900); }
+  .spec-text { font-size: 12px; color: var(--neutral-700); line-height: 1.6; margin-bottom: 4px; }
+  .spec-cond { margin-top: 6px; background: var(--neutral-100); border-radius: 4px; padding: 7px 10px; font-size: 11px; color: var(--neutral-700); line-height: 1.8; }
+  .spec-cond .c-title { font-weight: 700; color: var(--neutral-900); margin-bottom: 3px; font-size: 11px; }
+  .spec-note { font-size: 11px; color: var(--neutral-500); margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--neutral-200); line-height: 1.6; }
+
+  /* 하이라이트 */
+  .hl-block { outline: 2px dashed var(--accent); outline-offset: 3px; border-radius: 4px; position: relative; }
+  .hl-label { position: absolute; top: -10px; left: -2px; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 9px; font-weight: 700; z-index: 10; }
+
+  /* 목업 컴포넌트 */
+  .m-filter-bar { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 16px; display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .m-fg { display: flex; flex-direction: column; gap: 3px; }
+  .m-flabel { font-size: 11px; color: #64748b; font-weight: 700; }
+  .m-fhint { font-size: 10px; color: #94a3b8; }
+  .m-frow { display: flex; align-items: center; gap: 5px; }
+  .m-input { border: 1px solid #cbd5e1; border-radius: 5px; padding: 4px 8px; font-size: 11px; color: #334155; height: 28px; background: #fff; width: 100px; }
+  .m-select { border: 1px solid #cbd5e1; border-radius: 5px; padding: 4px 20px 4px 8px; font-size: 11px; color: #334155; height: 28px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2394a3b8'/%3E%3C/svg%3E") no-repeat right 6px center; appearance: none; }
+  .m-sep { color: #94a3b8; font-size: 11px; }
+  .m-vdiv { width: 1px; height: 36px; background: #e2e8f0; align-self: center; }
+  .m-btn-p { background: #1e3a5f; color: #fff; border: none; border-radius: 5px; padding: 0 12px; height: 28px; font-size: 11px; font-weight: 700; cursor: default; }
+  .m-btn-s { background: #fff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 0 10px; height: 28px; font-size: 11px; color: #64748b; cursor: default; }
+  .m-banner { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 7px; padding: 9px 13px; font-size: 11px; color: #1e40af; line-height: 1.7; margin-top: 12px; }
+  .m-banner-sub { font-size: 10px; color: #60a5fa; display: block; margin-top: 2px; }
+
+  /* KPI 카드 목업 */
+  .m-kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .m-kpi-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .m-kpi-card-title { font-size: 10px; font-weight: 700; color: #94a3b8; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+  .m-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .m-dot-blue { background: #3b82f6; } .m-dot-green { background: #10b981; }
+  .m-dot-red { background: #ef4444; } .m-dot-purple { background: #8b5cf6; }
+  .m-basis { font-size: 10px; color: #94a3b8; background: #f1f5f9; border-radius: 3px; padding: 1px 6px; margin-bottom: 8px; display: inline-block; }
+  .m-kpi-main { font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; }
+  .m-kpi-sub { font-size: 10px; color: #94a3b8; margin-bottom: 10px; }
+  .m-kpi-rows { border-top: 1px solid #f1f5f9; padding-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .m-kpi-row { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+  .m-kpi-row .l { color: #64748b; }
+  .m-kpi-row .v { font-weight: 700; color: #1e293b; }
+  .v-blue { color: #2563eb !important; } .v-red { color: #dc2626 !important; } .v-green { color: #059669 !important; } .v-orange { color: #d97706 !important; }
+  .m-mini-bar { height: 4px; background: #f1f5f9; border-radius: 2px; margin: 1px 0 4px; overflow: hidden; }
+  .m-mini-fill { height: 4px; border-radius: 2px; }
+  .m-toggle-group { display: flex; gap: 4px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f1f5f9; }
+  .m-toggle-btn { flex: 1; border: 1px solid #e2e8f0; border-radius: 4px; padding: 3px 4px; font-size: 10px; background: #fff; color: #64748b; text-align: center; cursor: default; }
+  .m-toggle-btn.on { background: #eff6ff; border-color: #3b82f6; color: #1d4ed8; font-weight: 700; }
+  .m-tip { display: inline-flex; align-items: center; justify-content: center; width: 12px; height: 12px; border-radius: 50%; background: #e2e8f0; color: #64748b; font-size: 8px; font-weight: 800; cursor: help; }
+  .tip-wrap { position: relative; display: inline-flex; align-items: center; }
+  .tip-box { display: none; position: absolute; bottom: calc(100% + 7px); left: 50%; transform: translateX(-50%); background: #1e293b; color: #f1f5f9; font-size: 10px; line-height: 1.8; padding: 8px 11px; border-radius: 6px; white-space: nowrap; z-index: 400; min-width: 210px; box-shadow: 0 4px 14px rgba(0,0,0,0.25); pointer-events: none; }
+  .tip-box::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: #1e293b; }
+  .tip-wrap:hover .tip-box { display: block; }
+  .tip-box b { color: #93c5fd; }
+  .m-input[type="date"] { cursor: pointer; }
+
+  /* 탭 목업 */
+  .m-tab-nav { display: flex; border-bottom: 2px solid #e2e8f0; background: #f8fafc; }
+  .m-tab-btn { padding: 9px 14px; font-size: 11px; font-weight: 600; color: #94a3b8; border: none; background: none; cursor: default; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; }
+  .m-tab-btn.on { color: #1e3a5f; border-bottom-color: #1e3a5f; background: #fff; }
+  .m-tab-body { padding: 16px; }
+  .m-sub-bar { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; font-size: 10px; color: #64748b; margin-bottom: 12px; display: flex; justify-content: space-between; }
+
+  /* 테이블 목업 */
+  .m-tbl { width: 100%; border-collapse: collapse; font-size: 10px; }
+  .m-tbl th { background: #f8fafc; padding: 7px 8px; color: #64748b; font-weight: 700; text-align: right; border-bottom: 2px solid #e2e8f0; white-space: nowrap; }
+  .m-tbl th:first-child { text-align: left; }
+  .m-tbl td { padding: 7px 8px; color: #334155; text-align: right; border-bottom: 1px solid #f1f5f9; }
+  .m-tbl td:first-child { text-align: left; font-weight: 600; color: #1e293b; }
+  .m-tbl tr.total td { background: #f8fafc; font-weight: 800; border-top: 2px solid #e2e8f0; border-bottom: none; }
+  .m-tbl-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .m-tbl-title { font-size: 12px; font-weight: 700; color: #1e293b; }
+  .m-btn-excel { background: #fff; border: 1px solid #16a34a; border-radius: 4px; padding: 3px 8px; font-size: 10px; color: #16a34a; font-weight: 700; cursor: default; }
+
+  /* 소멸 카드 목업 */
+  .m-expire-split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .m-exp-card { border-radius: 6px; padding: 12px; border: 1px solid; }
+  .m-exp-card.full { background: #fff5f5; border-color: #fca5a5; }
+  .m-exp-card.partial { background: #fff7ed; border-color: #fdba74; }
+  .m-exp-title { font-size: 10px; font-weight: 700; margin-bottom: 6px; }
+  .m-exp-card.full .m-exp-title { color: #b91c1c; }
+  .m-exp-card.partial .m-exp-title { color: #c2410c; }
+  .m-exp-main { font-size: 18px; font-weight: 800; margin-bottom: 2px; }
+  .m-exp-card.full .m-exp-main { color: #dc2626; }
+  .m-exp-card.partial .m-exp-main { color: #ea580c; }
+  .m-exp-sub { font-size: 10px; color: #94a3b8; }
+  .m-exp-rows { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.06); }
+  .m-exp-row { display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-bottom: 3px; }
+  .m-exp-row span:last-child { font-weight: 700; color: #1e293b; }
+
+  /* 일자별 탭 */
+  .m-daily-tabs { display: flex; border-bottom: 1px solid #e2e8f0; margin-bottom: 10px; }
+  .m-daily-tab { font-size: 10px; padding: 6px 12px; color: #94a3b8; cursor: default; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .m-daily-tab.on { color: #1e3a5f; font-weight: 700; border-bottom-color: #1e3a5f; }
+
+  /* 페이지네이션 */
+  .m-pagination { display: flex; justify-content: center; gap: 3px; margin-top: 10px; }
+  .m-page-btn { border: 1px solid #e2e8f0; border-radius: 4px; padding: 3px 8px; font-size: 10px; background: #fff; color: #475569; }
+  .m-page-btn.on { background: #1e3a5f; border-color: #1e3a5f; color: #fff; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div class="doc-header-bar">
+  <div class="doc-title">DS포인트 현황 대시보드 — 기획 스펙</div>
+  <div class="doc-meta">
+    <span><strong>작성일</strong> 2026-05-06</span>
+    <span><strong>작성자</strong> 서비스기획팀</span>
+    <span><strong>상태</strong> 검토중</span>
+    <span><strong>대상</strong> 개발팀</span>
+  </div>
+</div>
+
+<div class="page-selector">
+  <button class="page-tab active" onclick="switchPage('layout', this)">화면 구성도</button>
+  <button class="page-tab" onclick="switchPage('filter', this)">필터 영역</button>
+  <button class="page-tab" onclick="switchPage('kpi', this)">KPI 카드</button>
+  <button class="page-tab" onclick="switchPage('tab-grant', this)">탭 — 지급 상세</button>
+  <button class="page-tab" onclick="switchPage('tab-expire', this)">탭 — 소멸 상세</button>
+</div>
+
+<div class="legend-bar">
+  <div class="legend-item"><span class="badge">N</span> 스펙 포인트</div>
+  <div class="legend-item"><span class="tag tag-add">추가</span> 신규 기능</div>
+  <div class="legend-item"><span class="tag tag-change">조건</span> 데이터 조건/계산식</div>
+  <div class="legend-item"><span class="tag tag-keep">유지</span> 기존 동일</div>
+  <div class="legend-item"><span class="tag tag-req">확인필요</span> 개발팀 확인 필요</div>
+</div>
+
+
+<!-- ════════ 0. 화면 구성도 ════════ -->
+<div class="page-content active" id="page-layout">
+  <div class="spec-wrap">
+    <p style="font-size:12px; color:#64748b; margin-bottom:16px;">전체 화면을 <strong>위→아래 순서</strong>로 구성 영역을 정의합니다. 각 영역의 상세 조건은 상단 탭에서 확인하세요.</p>
+    <div class="spec-layout">
+      <div class="mockup-panel">
+        <div style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:16px;letter-spacing:0.5px;">FULL PAGE LAYOUT — 위 → 아래 순서</div>
+
+        <!-- 영역 1: 페이지 헤더 -->
+        <div class="hl-block" style="position:relative; margin-bottom:10px; background:#f8fafc; border-radius:6px; padding:10px 14px;">
+          <span class="hl-label">1</span>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-size:12px; font-weight:700; color:#1e293b;">DS포인트 현황 대시보드</div>
+            <div style="font-size:10px; color:#94a3b8;">마지막 갱신: 2026-05-07 02:00 &nbsp;|&nbsp; 매일 오전 02:00 자동 갱신</div>
+          </div>
+        </div>
+
+        <!-- 영역 2: 필터 -->
+        <div class="hl-block" style="position:relative; margin-bottom:10px;">
+          <span class="hl-label">2</span>
+          <div class="m-filter-bar" style="gap:12px;">
+            <div class="m-fg">
+              <span class="m-flabel">조회 기준일</span>
+              <input class="m-input" type="date" value="2026-05-07" />
+              <span class="m-fhint">이 날짜까지 지급된 포인트 기준</span>
+            </div>
+            <div class="m-vdiv"></div>
+            <div class="m-fg">
+              <span class="m-flabel">포인트 종류</span>
+              <select class="m-select" style="width:140px;">
+                <option>전체</option>
+                <option>이벤트포인트(3만)</option>
+                <option>이벤트포인트(5만)</option>
+              </select>
+              <span class="m-fhint">선택 시 전체 탭 일괄 적용</span>
+            </div>
+            <div style="display:flex; gap:5px; margin-left:auto; align-self:flex-end;">
+              <button class="m-btn-p">조회</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 영역 3: 조회 조건 배너 -->
+        <div class="hl-block" style="position:relative; margin-bottom:10px;">
+          <span class="hl-label">3</span>
+          <div class="m-banner" style="margin-top:0;">
+            📋 <strong>2026.05.07(오늘) 02:00 기준</strong> DS포인트 누적 현황을 조회합니다.
+            <span class="m-banner-sub">포인트 종류: 전체 &nbsp;·&nbsp; 지급/사용/소멸/잔여 모두 조회 기준일 이전 데이터 기준</span>
+          </div>
+        </div>
+
+        <!-- 영역 4: KPI 카드 -->
+        <div class="hl-block" style="position:relative; margin-bottom:10px;">
+          <span class="hl-label">4</span>
+          <div class="m-kpi-grid" style="margin-top:6px;">
+
+            <!-- 지급 카드 -->
+            <div class="m-kpi-card">
+              <div class="m-kpi-card-title"><span class="m-dot m-dot-blue"></span> 포인트 지급</div>
+              <div class="m-basis">조회 기준일까지 누적 지급</div>
+              <div class="m-kpi-main">6,368건</div>
+              <div class="m-kpi-sub">총 지급 건수 (회원 6,368명)</div>
+              <div class="m-kpi-rows">
+                <div class="m-kpi-row">
+                  <span class="l">최초 지급 포인트 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">조회 기준일까지 지급된 포인트 총액 (회수 반영 전)</div></span></span>
+                  <span class="v v-blue">253,840,000원</span>
+                </div>
+                <div class="m-kpi-row">
+                  <span class="l">회수 포인트 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">지급 후 주문 취소·직접 환수로 회수된 포인트 총액</div></span></span>
+                  <span class="v v-red">-2,057,980원</span>
+                </div>
+                <div class="m-kpi-row">
+                  <span class="l">최종 지급 포인트 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">최초 지급에서 회수를 뺀 실제 유효 지급 포인트</div></span></span>
+                  <span class="v v-green">251,782,020원</span>
+                </div>
+              </div>
+              <div class="m-toggle-group">
+                <div class="m-toggle-btn on">환수 포함</div>
+                <div class="m-toggle-btn">환수 제외</div>
+              </div>
+            </div>
+
+            <!-- 사용 카드 -->
+            <div class="m-kpi-card">
+              <div class="m-kpi-card-title"><span class="m-dot m-dot-green"></span> 포인트 사용</div>
+              <div class="m-basis">2026-05-07까지 누적 사용</div>
+              <div class="m-kpi-main">753건</div>
+              <div class="m-kpi-sub">총 사용 건수 (회원 641명)</div>
+              <div class="m-kpi-rows">
+                <div class="m-kpi-row">
+                  <span class="l">실 사용 포인트 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">조회 기준일까지 실제 사용된 포인트 (취소·환불 주문 제외)</div></span></span>
+                  <span class="v v-blue">17,070,920원</span>
+                </div>
+                <div class="m-kpi-row">
+                  <span class="l">금액 사용률 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">최종 지급금액 중 실제 사용된 금액의 비율 (실사용금액 ÷ 최종지급금액)</div></span></span>
+                  <span class="v v-green">6.78%</span>
+                </div>
+                <div class="m-kpi-row">
+                  <span class="l">건수 사용률 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">지급 건수 중 실제 사용이 발생한 건수의 비율 (사용건수 ÷ 지급건수)</div></span></span>
+                  <span class="v v-green">11.82%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 소멸 카드 -->
+            <div class="m-kpi-card">
+              <div class="m-kpi-card-title"><span class="m-dot m-dot-red"></span> 포인트 소멸</div>
+              <div class="m-basis">2026-05-07까지 누적 소멸</div>
+              <div class="m-kpi-main">1,980건</div>
+              <div class="m-kpi-sub">총 소멸 건수</div>
+              <div class="m-kpi-rows">
+                <div class="m-kpi-row">
+                  <span class="l">총 소멸 포인트 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">조회 기준일까지 유효기간 만료로 소멸된 포인트 총액</div></span></span>
+                  <span class="v v-red">97,987,650원</span>
+                </div>
+                <div class="m-kpi-row">
+                  <span class="l">전액 소멸 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">한 번도 사용하지 않고 유효기간이 만료된 건</div></span></span>
+                  <span class="v">1,500건 (75.8%)</span>
+                </div>
+                <div class="m-kpi-row">
+                  <span class="l">부분 소멸 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">일부만 사용하고 남은 잔액이 유효기간 만료로 소멸된 건</div></span></span>
+                  <span class="v">480건 (24.2%)</span>
+                </div>
+                <div class="m-kpi-row">
+                  <span class="l">소멸률 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">최종 지급 포인트 중 소멸된 비율</div></span></span>
+                  <span class="v v-red">38.91%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 잔여 카드 -->
+            <div class="m-kpi-card">
+              <div class="m-kpi-card-title"><span class="m-dot m-dot-purple"></span> 잔여 현황</div>
+              <div class="m-basis">2026-05-07 기준 추정 잔여량</div>
+              <div class="m-kpi-main">136,723,150원</div>
+              <div class="m-kpi-sub">잔여 포인트 추정</div>
+              <div class="m-kpi-rows">
+                <div class="m-kpi-row">
+                  <span class="l">잔여 비율 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">최종 지급 포인트 중 아직 사용·소멸되지 않은 비율</div></span></span>
+                  <span class="v v-blue">54.30%</span>
+                </div>
+                <div class="m-kpi-row"><span class="l">사용률</span><span class="v v-green">6.78%</span></div>
+                <div class="m-kpi-row"><span class="l">소멸률</span><span class="v v-red">38.91%</span></div>
+                <div class="m-kpi-row">
+                  <span class="l">소멸 예정 (3개월 내) <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">조회 기준일로부터 90일(3개월) 이내에 유효기간이 만료되는 잔여 포인트</div></span></span>
+                  <span class="v v-orange">42,500,000원</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 영역 5: 탭 영역 -->
+        <div class="hl-block" style="position:relative;">
+          <span class="hl-label">5</span>
+          <div class="m-tab-nav" style="margin-top:6px;">
+            <button class="m-tab-btn on">지급 상세</button>
+            <button class="m-tab-btn">소멸 상세</button>
+          </div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-top:none; border-radius:0 0 6px 6px; padding:14px; display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div style="background:#fff; border:1px solid #e2e8f0; border-radius:5px; padding:9px;">
+              <div style="font-size:10px; font-weight:700; color:#1e3a5f; margin-bottom:4px;">① 지급 상세</div>
+              <div style="font-size:9px; color:#64748b; line-height:1.6;">이벤트명별<br>지급·회수·최종지급·사용 요약</div>
+            </div>
+            <div style="background:#fff; border:1px solid #e2e8f0; border-radius:5px; padding:9px;">
+              <div style="font-size:10px; font-weight:700; color:#1e3a5f; margin-bottom:4px;">② 소멸 상세</div>
+              <div style="font-size:9px; color:#64748b; line-height:1.6;">전액/부분 소멸 카드<br>+ 이벤트명별 소멸 테이블</div>
+            </div>
+            <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:5px; padding:9px; grid-column:1/-1;">
+              <div style="font-size:9px; color:#92400e; line-height:1.6;"><strong>공통</strong> — 각 탭 우측 상단 엑셀 다운로드 버튼</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /mockup-panel -->
+
+      <div class="spec-panel">
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">페이지 헤더</span><span class="tag tag-add">추가</span></div>
+          <div class="spec-text">어드민 내 DS포인트 현황 메뉴로 진입하는 독립 페이지.</div>
+          <div class="spec-cond">
+            <div class="c-title">표시 내용</div>
+            페이지 제목: <b>DS포인트 현황 대시보드</b><br>
+            갱신 정보: "마지막 갱신: YYYY-MM-DD HH:MM | 매일 오전 02:00 자동 갱신"
+          </div>
+          <div class="spec-note">자동 갱신: 매일 오전 02:00 1회. 갱신 시각은 헤더에 표시.</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">필터 영역</span><span class="tag tag-change">조건</span></div>
+          <div class="spec-text">2가지 조건으로 조회 범위를 결정.</div>
+          <div class="spec-cond">
+            <div class="c-title">필터 항목 (순서대로)</div>
+            ① 조회 기준일: 이 날짜까지 지급된 포인트 전체 대상<br>
+            ② 포인트 종류: 개발팀 정의 이벤트명으로 구분<br>
+            &nbsp;&nbsp;&nbsp;→ 선택 시 KPI 4개 + 탭 2개 일괄 적용
+          </div>
+          <div class="spec-note">상세 조건 → [필터 영역] 탭 참조.</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">조회 조건 요약 배너</span><span class="tag tag-add">추가</span></div>
+          <div class="spec-text">필터 조건을 자연어로 요약 표시. 필터와 KPI 카드 사이에 위치.</div>
+          <div class="spec-cond">
+            <div class="c-title">표시 예시</div>
+            "2026.05.07(오늘) 기준 DS포인트<br>이벤트포인트(3만) 누적 현황입니다."
+          </div>
+          <div class="spec-note">파란 박스 스타일. 데이터 기준 혼선 방지 목적. 조회 버튼 클릭 시 내용 갱신.</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">KPI 카드 영역</span><span class="tag tag-add">추가</span></div>
+          <div class="spec-text">4개 카드 2×2 그리드. 각 카드에 (!) 툴팁으로 산정 공식 표시.</div>
+          <div class="spec-cond">
+            <div class="c-title">카드 배치 순서</div>
+            [좌상] 포인트 지급 &nbsp; [우상] 포인트 사용<br>
+            [좌하] 포인트 소멸 &nbsp; [우하] 잔여 현황
+          </div>
+          <div class="spec-note">상세 조건 → [KPI 카드] 탭 참조.</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">5</span><span class="spec-label">탭 콘텐츠 영역</span><span class="tag tag-add">추가</span></div>
+          <div class="spec-text">KPI 카드 하단. 2개 탭으로 상세 데이터 분리 표시.</div>
+          <div class="spec-cond">
+            <div class="c-title">탭 순서 (좌 → 우)</div>
+            ① 지급 상세<br>
+            ② 소멸 상세
+          </div>
+          <div class="spec-cond" style="margin-top:4px;">
+            <div class="c-title">공통 요소</div>
+            각 탭 우측 상단: 엑셀 다운로드 버튼<br>
+            파일명: DS포인트_{탭명}_{YYYYMMDD}.xlsx
+          </div>
+          <div class="spec-note">탭별 상세 조건 → 해당 탭 스펙 참조.</div>
+        </div>
+      </div><!-- /spec-panel -->
+    </div>
+  </div>
+</div>
+
+<!-- ════════ 1. 필터 영역 ════════ -->
+<div class="page-content" id="page-filter">
+  <div class="spec-wrap">
+    <div class="spec-layout">
+      <div class="mockup-panel">
+        <div style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:14px;">FILTER AREA</div>
+
+        <div class="m-filter-bar">
+          <div class="hl-block" style="position:relative;">
+            <span class="hl-label">1</span>
+            <div class="m-fg">
+              <span class="m-flabel">조회 기준일</span>
+              <input class="m-input" type="date" value="2026-05-07" />
+              <span class="m-fhint">이 날짜까지 지급된 포인트를 대상으로 조회</span>
+            </div>
+          </div>
+          <div class="m-vdiv"></div>
+          <div class="hl-block" style="position:relative;">
+            <span class="hl-label">2</span>
+            <div class="m-fg">
+              <span class="m-flabel">포인트 종류</span>
+              <select class="m-select" style="width:150px;">
+                <option>전체</option>
+                <option>이벤트포인트(3만)</option>
+                <option>이벤트포인트(5만)</option>
+              </select>
+              <span class="m-fhint">선택 시 전체 탭 일괄 적용</span>
+            </div>
+          </div>
+          <div class="hl-block" style="position:relative; display:flex; gap:5px; align-items:flex-end; padding-bottom:2px;">
+            <span class="hl-label">3</span>
+            <button class="m-btn-p">조회</button>
+          </div>
+        </div>
+
+        <div class="hl-block" style="position:relative; margin-top:12px;">
+          <span class="hl-label">4</span>
+          <div class="m-banner">
+            📌 <b>2026-05-07(오늘)</b> 기준 DS포인트 <b>(전체)</b> 누적 현황입니다.
+            <span class="m-banner-sub">지급/사용/소멸/잔여 모두 조회 기준일 이전 데이터 기준</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="spec-panel">
+        <div class="spec-item" style="background:#fff8f0; border-left:3px solid #e85d3a;">
+          <div class="spec-item-header"><span class="spec-num" style="background:#e85d3a;">★</span><span class="spec-label">대시보드 조회 대상 고정 조건</span><span class="tag tag-req">확인필요</span></div>
+          <div class="spec-text">이 대시보드는 아래 조건을 <b>항상 고정</b>으로 적용합니다. 사용자가 변경하는 필터가 아님.</div>
+          <div class="spec-cond">
+            <div class="c-title">고정 WHERE 조건 (전체 쿼리 공통)</div>
+            작성자 = <b>이메일</b><br>
+            이벤트 = <b>이벤트</b>
+          </div>
+          <div class="spec-note">컬럼명·값 정확한 명칭은 개발팀 DB 확인 필요. 이 조건에 해당하는 포인트만 이벤트포인트로 간주하며, 전체 집계 대상으로 사용.</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">조회 기준일</span><span class="tag tag-change">조건</span></div>
+          <div class="spec-text">이 날짜까지 지급된 DS포인트 전체를 조회 대상으로 하고, 그 포인트들의 누적 사용·소멸·잔여를 같은 기준일로 집계합니다.</div>
+          <div class="spec-cond">
+            <div class="c-title">입력 방식</div>
+            날짜 선택 (캘린더 팝업)<br>
+            기본값: 오늘(today)<br>
+            미래 날짜 선택 불가
+          </div>
+          <div class="spec-cond" style="margin-top:4px;">
+            <div class="c-title">기준일 적용 범위 (전 항목 동일)</div>
+            지급 현황 → 지급일자 ≤ 조회 기준일<br>
+            사용 현황 → 사용일자 ≤ 조회 기준일<br>
+            소멸 현황 → 소멸일자 ≤ 조회 기준일<br>
+            잔여 현황 → 기준일 시점 추정값
+          </div>
+          <div class="spec-note">과거 날짜 선택 시 해당 시점 스냅샷으로 조회 가능.</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">포인트 종류</span><span class="tag tag-change">조건</span></div>
+          <div class="spec-text">개발팀이 정의한 이벤트명 단위로 필터링. 선택 시 KPI 4개 + 하단 탭 2개 전체에 일괄 적용.</div>
+          <div class="spec-cond">
+            <div class="c-title">선택 옵션</div>
+            전체 (기본값)<br>
+            이벤트포인트(3만) — 개발팀 정의 이벤트명<br>
+            이벤트포인트(5만) — 개발팀 정의 이벤트명<br>
+            <b>실제 옵션값: 개발팀이 DB 기준으로 제공</b>
+          </div>
+          <div class="spec-note">금액 직접 표기(30,000원/50,000원) 대신 이벤트명으로 노출. 이벤트명은 개발팀에서 정의.</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">조회 버튼</span><span class="tag tag-add">추가</span></div>
+          <div class="spec-text">필터 조건 변경 후 <b>조회</b> 버튼 클릭 시 전체 화면 데이터 갱신.</div>
+          <div class="spec-cond">
+            <div class="c-title">자동 갱신 정책</div>
+            매일 오전 02:00 1회 자동 갱신<br>
+            헤더에 "마지막 갱신: YYYY-MM-DD 02:00" 표시
+          </div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">조회 조건 요약 배너</span><span class="tag tag-add">추가</span></div>
+          <div class="spec-text">현재 적용 필터를 자연어로 요약. 조회 실행 시 갱신.</div>
+          <div class="spec-cond">
+            <div class="c-title">표시 형식</div>
+            "{조회기준일}(오늘) 기준 DS포인트<br>({포인트종류}) 누적 현황입니다."
+          </div>
+          <div class="spec-note">필터와 KPI 카드 사이 위치. 항상 노출. 파란 박스 스타일.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════ 2. KPI 카드 ════════ -->
+<div class="page-content" id="page-kpi">
+  <div class="spec-wrap">
+    <div class="spec-layout">
+      <div class="mockup-panel">
+        <div style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:14px;">KPI CARDS (4개 가로 배치)</div>
+        <div class="m-kpi-grid">
+
+          <!-- 지급 카드 -->
+          <div class="hl-block" style="position:relative;">
+            <span class="hl-label">1</span>
+            <div class="m-kpi-card">
+              <div class="m-kpi-card-title"><span class="m-dot m-dot-blue"></span> 포인트 지급</div>
+              <div class="m-basis">조회 기준일까지 누적 지급</div>
+              <div class="m-kpi-main">6,368건</div>
+              <div class="m-kpi-sub">총 지급 건수 (회원 6,368명)</div>
+              <div class="m-kpi-rows">
+                <div class="m-kpi-row">
+                  <span class="l">최초 지급 포인트 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">조회 기준일까지 지급된 포인트 총액 (회수 반영 전)</div></span></span>
+                  <span class="v v-blue">253,840,000원</span>
+                </div>
+                <div class="m-kpi-row">
+                  <span class="l">회수 포인트 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">지급 후 주문 취소·직접 환수로 회수된 포인트 총액</div></span></span>
+                  <span class="v v-red">-2,057,980원</span>
+                </div>
+                <div class="m-kpi-row">
+                  <span class="l">최종 지급 포인트 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">최초 지급에서 회수를 뺀 실제 유효 지급 포인트</div></span></span>
+                  <span class="v v-green">251,782,020원</span>
+                </div>
+              </div>
+              <div class="m-toggle-group">
+                <div class="m-toggle-btn on">환수 포함</div>
+                <div class="m-toggle-btn">환수 제외</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 사용 카드 -->
+          <div class="hl-block" style="position:relative;">
+            <span class="hl-label">2</span>
+            <div class="m-kpi-card">
+              <div class="m-kpi-card-title"><span class="m-dot m-dot-green"></span> 포인트 사용</div>
+              <div class="m-basis">2026-05-07까지 누적 사용</div>
+              <div class="m-kpi-main">753건</div>
+              <div class="m-kpi-sub">총 사용 건수 (회원 641명)</div>
+              <div class="m-kpi-rows">
+                <div class="m-kpi-row">
+                  <span class="l">실 사용 포인트 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">조회 기준일까지 실제 사용된 포인트 (취소·환불 주문 제외)</div></span></span>
+                  <span class="v v-blue">17,070,920원</span>
+                </div>
+                <div class="m-kpi-row">
+                  <span class="l">금액 사용률 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">최종 지급금액 중 실제 사용된 금액의 비율 (실사용금액 ÷ 최종지급금액)</div></span></span>
+                  <span class="v v-green">6.78%</span>
+                </div>
+                <div class="m-kpi-row">
+                  <span class="l">건수 사용률 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">지급 건수 중 실제 사용이 발생한 건수의 비율 (사용건수 ÷ 지급건수)</div></span></span>
+                  <span class="v v-green">11.82%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 소멸 카드 -->
+          <div class="hl-block" style="position:relative;">
+            <span class="hl-label">3</span>
+            <div class="m-kpi-card">
+              <div class="m-kpi-card-title"><span class="m-dot m-dot-red"></span> 포인트 소멸</div>
+              <div class="m-basis">2026-05-07까지 누적 소멸</div>
+              <div class="m-kpi-main">1,980건</div>
+              <div class="m-kpi-sub">총 소멸 건수</div>
+              <div class="m-kpi-rows">
+                <div class="m-kpi-row">
+                  <span class="l">총 소멸 포인트 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">조회 기준일까지 유효기간 만료로 소멸된 포인트 총액</div></span></span>
+                  <span class="v v-red">97,987,650원</span>
+                </div>
+                <div class="m-kpi-row">
+                  <span class="l">전액 소멸 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">한 번도 사용하지 않고 유효기간이 만료된 건</div></span></span>
+                  <span class="v">1,500건 (75.8%)</span>
+                </div>
+                <div class="m-kpi-row">
+                  <span class="l">부분 소멸 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">일부만 사용하고 남은 잔액이 유효기간 만료로 소멸된 건</div></span></span>
+                  <span class="v">480건 (24.2%)</span>
+                </div>
+                <div class="m-kpi-row">
+                  <span class="l">소멸률 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">최종 지급 포인트 중 소멸된 비율</div></span></span>
+                  <span class="v v-red">38.91%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 잔여 카드 -->
+          <div class="hl-block" style="position:relative;">
+            <span class="hl-label">4</span>
+            <div class="m-kpi-card">
+              <div class="m-kpi-card-title"><span class="m-dot m-dot-purple"></span> 잔여 현황</div>
+              <div class="m-basis">2026-05-07 기준 추정 잔여량</div>
+              <div class="m-kpi-main">136,723,150원</div>
+              <div class="m-kpi-sub">잔여 포인트 추정</div>
+              <div class="m-kpi-rows">
+                <div class="m-kpi-row">
+                  <span class="l">잔여 비율 <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">최종 지급 포인트 중 아직 사용·소멸되지 않은 비율</div></span></span>
+                  <span class="v v-blue">54.30%</span>
+                </div>
+                <div class="m-kpi-row"><span class="l">사용률</span><span class="v v-green">6.78%</span></div>
+                <div class="m-kpi-row"><span class="l">소멸률</span><span class="v v-red">38.91%</span></div>
+                <div class="m-kpi-row">
+                  <span class="l">소멸 예정 (3개월 내) <span class="tip-wrap"><span class="m-tip">!</span><div class="tip-box">조회 기준일로부터 90일(3개월) 이내에 유효기간이 만료되는 잔여 포인트</div></span></span>
+                  <span class="v v-orange">42,500,000원</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="spec-panel">
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">포인트 지급 카드</span><span class="tag tag-change">조건</span></div>
+          <div class="spec-text">조회 기준일까지 지급된 DS포인트 전체 누적 합계.</div>
+          <div class="spec-cond">
+            <div class="c-title">계산식</div>
+            최초 지급 포인트 = SUM(포인트금액)<br>　WHERE 작성자=이메일 AND 이벤트=이벤트<br>　AND 타입=적립 AND 지급일자 ≤ 조회기준일<br>
+            회수 포인트 = SUM(포인트금액)<br>　WHERE 작성자=이메일 AND 이벤트=이벤트<br>　AND 타입=차감 AND 차감일자 ≤ 조회기준일<br>
+            최종 지급 포인트 = 최초 - 회수
+          </div>
+          <div class="spec-note">회수: 직접 환수 + 주문 취소 환수 포함. 환수 포함/제외 토글로 전환.</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">1-1</span><span class="spec-label">환수 포함/제외 토글</span><span class="tag tag-add">추가</span></div>
+          <div class="spec-text">지급 카드 하단 토글. 전환 시 모든 KPI의 기준값이 변경됨.</div>
+          <div class="spec-cond">
+            <div class="c-title">동작</div>
+            환수 포함: 최초 지급 포인트 기준<br>환수 제외: 최종 지급 포인트 기준<br>→ 사용률, 소멸률, 잔여 비율 재계산
+          </div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">포인트 사용 카드</span><span class="tag tag-change">조건</span></div>
+          <div class="spec-text">조회 기준일까지 누적 사용 현황.</div>
+          <div class="spec-cond">
+            <div class="c-title">계산식</div>
+            실 사용 포인트 = SUM(사용금액)<br>　WHERE 작성자=이메일 AND 이벤트=이벤트<br>　AND 사용일자 ≤ 조회기준일<br>　AND 주문상태 = 정상(취소/환불 제외)<br>
+            사용률 = 최종 지급금액 중 실제 사용된 금액의 비율 (실사용금액 ÷ 최종지급금액)<br>
+            사용건수비율 = 지급 건수 중 실제 사용이 발생한 건수의 비율 (사용건수 ÷ 지급건수)
+          </div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">포인트 소멸 카드</span><span class="tag tag-change">조건</span></div>
+          <div class="spec-text">조회 기준일까지 누적 소멸 현황. 전액·부분 소멸 구분.</div>
+          <div class="spec-cond">
+            <div class="c-title">계산식</div>
+            소멸 포인트 = SUM(포인트금액)<br>　WHERE 작성자=이메일 AND 이벤트=이벤트<br>　AND 타입=소멸 AND 소멸일자 ≤ 기준일<br>
+            전액 소멸: 한 번도 사용하지 않고 유효기간이 만료된 건<br>
+            부분 소멸: 일부만 사용하고 남은 잔액이 유효기간 만료로 소멸된 건<br>
+            소멸률 = 최종 지급 포인트 중 소멸된 비율
+          </div>
+          <div class="spec-note"><span class="tag tag-req">확인필요</span> 타입 컬럼에 "소멸" 값 존재 여부 개발팀 확인 필요.</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">잔여 현황 카드</span><span class="tag tag-change">조건</span></div>
+          <div class="spec-text">기준일 기준 미사용·미소멸 포인트 추정.</div>
+          <div class="spec-cond">
+            <div class="c-title">계산식</div>
+            잔여 포인트 = 최종지급 - 실사용 - 소멸포인트<br>
+            잔여 비율 = 최종 지급 포인트 중 아직 사용·소멸되지 않은 비율<br>
+            소멸 예정 = 기준일 기준 3개월 내 만료 예정 포인트
+          </div>
+          <div class="spec-note"><span class="tag tag-req">확인필요</span> 소멸 예정 계산 시 지급일+3개월 기준 유효기간 만료일 조회 필요.</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">공통</span><span class="spec-label">항목 툴팁 (!)</span><span class="tag tag-add">추가</span></div>
+          <div class="spec-text">각 항목 옆 (!) 아이콘에 마우스 오버 시 산정 공식 툴팁 노출.</div>
+          <div class="spec-note">보는 사람이 각 수치의 계산 기준을 즉시 확인할 수 있도록.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════ 3. 탭 — 지급 상세 ════════ -->
+<div class="page-content" id="page-tab-grant">
+  <div class="spec-wrap">
+    <div class="spec-layout">
+      <div class="mockup-panel">
+        <div style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:14px;">TAB — 지급 상세</div>
+        <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden;">
+          <div class="m-tab-nav">
+            <div class="m-tab-btn on">지급 상세</div>
+            <div class="m-tab-btn">소멸 상세</div>
+          </div>
+          <div class="m-tab-body">
+            <div class="hl-block" style="position:relative; margin-bottom:10px;">
+              <span class="hl-label">1</span>
+              <div class="m-sub-bar">
+                <span>📋 2026-05-07 기준 누적 지급 데이터</span>
+                <span style="color:#94a3b8;font-size:10px;">조회 기준일 이전에 지급된 포인트 전체 합계</span>
+              </div>
+            </div>
+            <div class="hl-block" style="position:relative;">
+              <span class="hl-label">2</span>
+              <div class="m-tbl-header">
+                <span class="m-tbl-title">포인트 지급 상세</span>
+                <button class="m-btn-excel">⬇ 엑셀 다운로드</button>
+              </div>
+              <table class="m-tbl">
+                <thead>
+                  <tr>
+                    <th>이벤트명</th><th>지급건수</th><th>지급회원수</th><th>최초지급포인트</th><th>회수포인트</th><th>최종지급포인트</th><th>사용건수</th><th>사용포인트</th><th>사용률</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>이벤트포인트(5만)</td><td>3,140건</td><td>3,140명</td><td>157,000,000</td><td style="color:#dc2626;">-1,437,760</td><td style="color:#059669;font-weight:700;">155,562,240</td><td>562건</td><td>15,254,640</td><td>9.80%</td></tr>
+                  <tr><td>이벤트포인트(3만)</td><td>3,228건</td><td>3,228명</td><td>96,840,000</td><td style="color:#dc2626;">-620,220</td><td style="color:#059669;font-weight:700;">96,219,780</td><td>191건</td><td>1,816,280</td><td>1.89%</td></tr>
+                  <tr class="total"><td>합계</td><td>6,368건</td><td>6,368명</td><td>253,840,000</td><td style="color:#dc2626;">-2,057,980</td><td style="color:#059669;">251,782,020</td><td>753건</td><td>17,070,920</td><td>6.78%</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="spec-panel">
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">서브 안내 문구</span><span class="tag tag-add">추가</span></div>
+          <div class="spec-text">탭 상단에 현재 탭의 데이터 기준을 명시합니다.</div>
+          <div class="spec-cond">
+            <div class="c-title">표시 내용</div>
+            좌: "{조회기준일} 기준 누적 지급 데이터"<br>
+            우: "조회 기준일 이전에 지급된 포인트 전체 합계"
+          </div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">테이블 컬럼 정의</span><span class="tag tag-change">조건</span></div>
+          <div class="spec-text">이벤트명별 행 구성. 마지막 행은 합계.</div>
+          <div class="spec-cond">
+            <div class="c-title">컬럼 목록</div>
+            이벤트명 (개발팀 정의 이벤트명)<br>
+            지급 건수: COUNT(포인트ID)<br>
+            지급 회원 수: COUNT(DISTINCT 고객ID)<br>
+            최초 지급 포인트: SUM(포인트금액) WHERE 타입=적립 AND 지급일자 ≤ 조회기준일<br>
+            회수 포인트: SUM(포인트금액) WHERE 타입=차감 AND 차감일자 ≤ 조회기준일<br>
+            최종 지급 포인트: 최초 - 회수<br>
+            사용 건수: COUNT(DISTINCT 주문ID)<br>
+            사용 포인트: SUM(사용금액)<br>
+            사용률: 사용포인트 ÷ 최종지급 × 100
+          </div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">합계 행</span><span class="tag tag-keep">유지</span></div>
+          <div class="spec-text">테이블 최하단 고정. 전체 포인트 종류의 합산값 표시.</div>
+          <div class="spec-note">배경색 구분(회색)으로 일반 행과 구분.</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">4</span><span class="spec-label">엑셀 다운로드</span><span class="tag tag-add">추가</span></div>
+          <div class="spec-text">테이블 우측 상단. 현재 필터 조건의 데이터를 엑셀로 다운로드.</div>
+          <div class="spec-cond">
+            <div class="c-title">파일명 규칙</div>
+            DS포인트_지급상세_{YYYYMMDD}.xlsx
+          </div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">5</span><span class="spec-label">컬럼 정렬</span><span class="tag tag-add">추가</span></div>
+          <div class="spec-text">모든 컬럼 헤더 클릭 시 오름차순/내림차순 정렬.</div>
+          <div class="spec-note">숫자 컬럼: 우측 정렬. 이벤트명: 좌측 정렬.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════ 4. 탭 — 소멸 상세 ════════ -->
+<div class="page-content" id="page-tab-expire">
+  <div class="spec-wrap">
+    <div class="spec-layout">
+      <div class="mockup-panel">
+        <div style="font-size:11px;font-weight:700;color:#94a3b8;margin-bottom:14px;">TAB — 소멸 상세</div>
+        <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden;">
+          <div class="m-tab-nav">
+            <div class="m-tab-btn">지급 상세</div>
+            <div class="m-tab-btn on">소멸 상세</div>
+          </div>
+          <div class="m-tab-body">
+            <div class="m-sub-bar" style="margin-bottom:12px;">
+              <span>📋 2026-05-07 기준 누적 소멸 데이터</span>
+              <span style="color:#94a3b8;font-size:10px;">조회 기준일까지 소멸 처리된 건만 집계</span>
+            </div>
+
+            <div class="hl-block" style="position:relative; margin-bottom:12px;">
+              <span class="hl-label">1</span>
+              <div class="m-expire-split">
+                <div class="m-exp-card full">
+                  <div class="m-exp-title">전액 소멸 (미사용 소멸)</div>
+                  <div class="m-exp-main">1,500건</div>
+                  <div class="m-exp-sub">전체 소멸의 75.8%</div>
+                  <div class="m-exp-rows">
+                    <div class="m-exp-row"><span>소멸 포인트</span><span>75,000,000원</span></div>
+                    <div class="m-exp-row"><span>이벤트포인트(5만)</span><span>1,100건</span></div>
+                    <div class="m-exp-row"><span>이벤트포인트(3만)</span><span>400건</span></div>
+                  </div>
+                </div>
+                <div class="m-exp-card partial">
+                  <div class="m-exp-title">부분 소멸 (일부 사용 후 소멸)</div>
+                  <div class="m-exp-main">480건</div>
+                  <div class="m-exp-sub">전체 소멸의 24.2%</div>
+                  <div class="m-exp-rows">
+                    <div class="m-exp-row"><span>소멸 포인트</span><span>22,987,650원</span></div>
+                    <div class="m-exp-row"><span>이벤트포인트(5만)</span><span>361건</span></div>
+                    <div class="m-exp-row"><span>이벤트포인트(3만)</span><span>119건</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="hl-block" style="position:relative;">
+              <span class="hl-label">2</span>
+              <div class="m-tbl-header">
+                <span class="m-tbl-title">포인트 소멸 상세</span>
+                <button class="m-btn-excel">⬇ 엑셀 다운로드</button>
+              </div>
+              <table class="m-tbl">
+                <thead>
+                  <tr><th>이벤트명</th><th>소멸건수</th><th>소멸포인트</th><th>전액소멸건수</th><th>전액소멸포인트</th><th>부분소멸건수</th><th>부분소멸포인트</th><th>소멸률</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>이벤트포인트(5만)</td><td>1,461건</td><td style="color:#dc2626;">72,549,690</td><td>1,100건</td><td>55,000,000</td><td>361건</td><td>17,549,690</td><td>46.63%</td></tr>
+                  <tr><td>이벤트포인트(3만)</td><td>519건</td><td style="color:#dc2626;">25,437,960</td><td>400건</td><td>20,000,000</td><td>119건</td><td>5,437,960</td><td>26.43%</td></tr>
+                  <tr class="total"><td>합계</td><td>1,980건</td><td style="color:#dc2626;">97,987,650</td><td>1,500건</td><td>75,000,000</td><td>480건</td><td>22,987,650</td><td>38.91%</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="spec-panel">
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">1</span><span class="spec-label">전액 / 부분 소멸 요약 카드</span><span class="tag tag-add">추가</span></div>
+          <div class="spec-text">소멸 테이블 위 2분할 요약 카드. 전액·부분 소멸 현황을 한눈에 파악.</div>
+          <div class="spec-cond">
+            <div class="c-title">전액 소멸 정의</div>
+            소멸된 포인트ID 중 사용 이력이 전혀 없는 건 (0원 사용 후 소멸)
+          </div>
+          <div class="spec-cond" style="margin-top:4px;">
+            <div class="c-title">부분 소멸 정의</div>
+            소멸된 포인트ID 중 일부 사용 후 잔액이 소멸된 건
+          </div>
+          <div class="spec-note"><span class="tag tag-req">확인필요</span> 포인트ID별 사용이력 조인 필요. 구현 가능 여부 개발팀 확인.</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">2</span><span class="spec-label">소멸 상세 테이블 컬럼</span><span class="tag tag-change">조건</span></div>
+          <div class="spec-text">포인트 종류별 소멸 내역. 전액·부분 구분 포함.</div>
+          <div class="spec-cond">
+            <div class="c-title">컬럼 목록</div>
+            이벤트명 (개발팀 정의)<br>
+            소멸 건수: COUNT(포인트ID) WHERE 타입=소멸<br>
+            소멸 포인트: SUM(포인트금액) WHERE 타입=소멸<br>
+            전액 소멸 건수 / 전액 소멸 포인트<br>
+            부분 소멸 건수 / 부분 소멸 포인트<br>
+            소멸률: 소멸포인트 ÷ 최종지급포인트 × 100
+          </div>
+          <div class="spec-note">모두 조회 기준일까지 누적값 기준.</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-item-header"><span class="spec-num">3</span><span class="spec-label">유효기간 정책</span><span class="tag tag-keep">유지</span></div>
+          <div class="spec-text">포인트 유효기간: 지급일로부터 3개월.</div>
+          <div class="spec-cond">
+            <div class="c-title">예시</div>
+            2026-02-01 지급 → 2026-05-01 소멸<br>2026-03-15 지급 → 2026-06-15 소멸
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  function switchPage(id, btn) {
+    document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.page-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>
